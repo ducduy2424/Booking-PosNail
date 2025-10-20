@@ -106,7 +106,7 @@ src/
 │   └── layout/         # Layout components
 │       └── MainLayout.tsx
 ├── pages/              # Page components
-│   └── HomePage.tsx
+│   └── BookingPage.tsx  # Default home page
 ├── store/              # Redux store configuration
 │   ├── index.ts        # Store setup
 │   ├── slices/         # Redux slices

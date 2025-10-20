@@ -3,15 +3,9 @@ import { Button } from 'components/ui/button'
 import { Input } from 'components/ui/input'
 import { Card, CardContent } from 'components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'components/ui/dialog'
-import { Search, Check } from 'lucide-react'
-
-interface Technician {
-  id: string
-  name: string
-  avatar: string
-  specialties?: string[]
-  rating?: number
-}
+import { Search, Check, Star } from 'lucide-react'
+import { mockTechnicians } from 'data/mockData'
+import type { Technician } from 'store/slices/technicianSlice'
 
 interface TechnicianSelectionModalProps {
   isOpen: boolean
@@ -20,56 +14,11 @@ interface TechnicianSelectionModalProps {
   technicians?: Technician[]
 }
 
-const defaultTechnicians: Technician[] = [
-  { id: '1', name: 'Emma', avatar: '/api/placeholder/100/100', specialties: ['Manicure', 'Pedicure'], rating: 4.8 },
-  { id: '2', name: 'Olivia', avatar: '/api/placeholder/100/100', specialties: ['Nail Art', 'Gel Polish'], rating: 4.9 },
-  { id: '3', name: 'Ava', avatar: '/api/placeholder/100/100', specialties: ['French Manicure'], rating: 4.7 },
-  { id: '4', name: 'Sophia', avatar: '/api/placeholder/100/100', specialties: ['Nail Extensions'], rating: 4.9 },
-  { id: '5', name: 'Isabella', avatar: '/api/placeholder/100/100', specialties: ['Manicure', 'Nail Art'], rating: 4.8 },
-  { id: '6', name: 'Mia', avatar: '/api/placeholder/100/100', specialties: ['Pedicure'], rating: 4.6 },
-  { id: '7', name: 'Amelia', avatar: '/api/placeholder/100/100', specialties: ['Gel Polish', 'Nail Art'], rating: 4.8 },
-  { id: '8', name: 'Harper', avatar: '/api/placeholder/100/100', specialties: ['Manicure'], rating: 4.7 },
-  {
-    id: '9',
-    name: 'Evelyn',
-    avatar: '/api/placeholder/100/100',
-    specialties: ['Nail Extensions', 'Nail Art'],
-    rating: 4.9,
-  },
-  {
-    id: '10',
-    name: 'Abigail',
-    avatar: '/api/placeholder/100/100',
-    specialties: ['French Manicure', 'Pedicure'],
-    rating: 4.8,
-  },
-  { id: '11', name: 'Emily', avatar: '/api/placeholder/100/100', specialties: ['Manicure', 'Gel Polish'], rating: 4.7 },
-  { id: '12', name: 'Elizabeth', avatar: '/api/placeholder/100/100', specialties: ['Nail Art'], rating: 4.8 },
-  {
-    id: '13',
-    name: 'Grace',
-    avatar: '/api/placeholder/100/100',
-    specialties: ['Pedicure', 'Nail Extensions'],
-    rating: 4.6,
-  },
-  { id: '14', name: 'Lily', avatar: '/api/placeholder/100/100', specialties: ['Manicure', 'Nail Art'], rating: 4.9 },
-  { id: '15', name: 'Chloe', avatar: '/api/placeholder/100/100', specialties: ['Gel Polish'], rating: 4.8 },
-  { id: '16', name: 'Camila', avatar: '/api/placeholder/100/100', specialties: ['French Manicure'], rating: 4.7 },
-  { id: '17', name: 'Victoria', avatar: '/api/placeholder/100/100', specialties: ['Nail Extensions'], rating: 4.8 },
-  {
-    id: '18',
-    name: 'Genevieve',
-    avatar: '/api/placeholder/100/100',
-    specialties: ['Manicure', 'Pedicure'],
-    rating: 4.9,
-  },
-]
-
 export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  technicians = defaultTechnicians,
+  technicians = mockTechnicians,
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedTechnician, setSelectedTechnician] = React.useState<Technician | null>(null)
@@ -123,7 +72,18 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
                 >
                   <CardContent className="p-4 text-center">
                     <div className="relative mb-3">
-                      <div className="w-16 h-16 mx-auto bg-gradient-to-br from-pink-200 to-purple-200 rounded-full flex items-center justify-center">
+                      <img
+                        src={technician.avatar}
+                        alt={technician.name}
+                        className="w-16 h-16 mx-auto rounded-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.style.display = 'none'
+                          const fallback = target.nextElementSibling as HTMLElement
+                          if (fallback) fallback.style.display = 'flex'
+                        }}
+                      />
+                      <div className="w-16 h-16 mx-auto bg-gradient-to-br from-pink-200 to-purple-200 rounded-full flex items-center justify-center hidden">
                         <span className="text-lg font-semibold text-gray-700">{technician.name.charAt(0)}</span>
                       </div>
                       {isSelected && (
@@ -133,7 +93,18 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
                       )}
                     </div>
                     <h3 className="font-medium text-sm">{technician.name}</h3>
-                    {technician.rating && <p className="text-xs text-gray-500">⭐ {technician.rating}</p>}
+                    <div className="flex items-center justify-center space-x-1 mt-1">
+                      <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                      <span className="text-xs text-gray-600">{technician.rating}</span>
+                      <span className="text-xs text-gray-400">({technician.totalReviews})</span>
+                    </div>
+                    <div className="mt-2">
+                      <div className="text-xs text-gray-500">
+                        {technician.specialties.slice(0, 2).join(', ')}
+                        {technician.specialties.length > 2 && '...'}
+                      </div>
+                      <div className="text-xs text-blue-600 mt-1">{technician.experience} năm kinh nghiệm</div>
+                    </div>
                   </CardContent>
                 </Card>
               )

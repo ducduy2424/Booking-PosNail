@@ -66,7 +66,7 @@
 ### 🔧 **Updated Components**
 
 #### 8. **App.tsx** - Updated
-- ✅ Import BookingPage thay vì HomePage
+- ✅ BookingPage is the default home page
 - ✅ Clean và simple structure
 
 ---

@@ -1,0 +1,372 @@
+// Mock data for development
+import type { Service, ServiceCategory } from 'store/slices/serviceSlice'
+import type { Technician } from 'store/slices/technicianSlice'
+import type { Booking } from 'store/slices/bookingSlice'
+
+// ===== SERVICE CATEGORIES =====
+export const mockServiceCategories: ServiceCategory[] = [
+  {
+    id: 'cat-1',
+    name: 'Manicure',
+    description: 'Dịch vụ chăm sóc móng tay',
+    icon: '💅',
+    isActive: true,
+  },
+  {
+    id: 'cat-2',
+    name: 'Pedicure',
+    description: 'Dịch vụ chăm sóc móng chân',
+    icon: '🦶',
+    isActive: true,
+  },
+  {
+    id: 'cat-3',
+    name: 'Nail Art',
+    description: 'Vẽ móng nghệ thuật',
+    icon: '🎨',
+    isActive: true,
+  },
+  {
+    id: 'cat-4',
+    name: 'Spa Treatment',
+    description: 'Chăm sóc spa thư giãn',
+    icon: '✨',
+    isActive: true,
+  },
+]
+
+// ===== SERVICES =====
+export const mockServices: Service[] = [
+  // Manicure Services
+  {
+    id: 'srv-1',
+    name: 'Basic Manicure',
+    description: 'Cắt tỉa, dũa móng, sơn màu cơ bản',
+    price: 150000,
+    duration: 45,
+    category: 'cat-1',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'srv-2',
+    name: 'Gel Manicure',
+    description: 'Sơn gel cao cấp, bền màu lâu',
+    price: 250000,
+    duration: 60,
+    category: 'cat-1',
+    image: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'srv-3',
+    name: 'Acrylic Nails',
+    description: 'Nối móng acrylic chắc khỏe',
+    price: 350000,
+    duration: 90,
+    category: 'cat-1',
+    image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+
+  // Pedicure Services
+  {
+    id: 'srv-4',
+    name: 'Basic Pedicure',
+    description: 'Chăm sóc móng chân cơ bản',
+    price: 200000,
+    duration: 60,
+    category: 'cat-2',
+    image: 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'srv-5',
+    name: 'Spa Pedicure',
+    description: 'Chăm sóc chân + massage thư giãn',
+    price: 300000,
+    duration: 75,
+    category: 'cat-2',
+    image: 'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+
+  // Nail Art Services
+  {
+    id: 'srv-6',
+    name: 'Simple Nail Art',
+    description: 'Vẽ móng đơn giản, họa tiết cơ bản',
+    price: 100000,
+    duration: 30,
+    category: 'cat-3',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'srv-7',
+    name: 'Premium Nail Art',
+    description: 'Vẽ móng phức tạp, 3D, đính đá',
+    price: 300000,
+    duration: 60,
+    category: 'cat-3',
+    image: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+
+  // Spa Treatment Services
+  {
+    id: 'srv-8',
+    name: 'Hand Spa',
+    description: 'Chăm sóc da tay, massage thư giãn',
+    price: 180000,
+    duration: 45,
+    category: 'cat-4',
+    image: 'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'srv-9',
+    name: 'Deluxe Package',
+    description: 'Combo full dịch vụ: Manicure + Pedicure + Spa',
+    price: 650000,
+    duration: 150,
+    category: 'cat-4',
+    image: 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=400',
+    isActive: true,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+]
+
+// ===== TECHNICIANS =====
+export const mockTechnicians: Technician[] = [
+  {
+    id: 'tech-1',
+    name: 'Nguyễn Thị Hương',
+    email: 'huong@posnail.com',
+    phone: '0901234567',
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    specialties: ['Manicure', 'Gel Nails', 'Nail Art'],
+    experience: 5,
+    rating: 4.8,
+    totalReviews: 127,
+    isActive: true,
+    bio: 'Chuyên gia nail với 5 năm kinh nghiệm, đam mê nghệ thuật vẽ móng',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'tech-2',
+    name: 'Trần Minh Châu',
+    email: 'chau@posnail.com',
+    phone: '0902234567',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    specialties: ['Pedicure', 'Spa Treatment', 'Massage'],
+    experience: 7,
+    rating: 4.9,
+    totalReviews: 203,
+    isActive: true,
+    bio: 'Kỹ thuật viên chăm sóc chân chuyên nghiệp, được khách hàng yêu thích',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'tech-3',
+    name: 'Lê Thị Mai',
+    email: 'mai@posnail.com',
+    phone: '0903234567',
+    avatar: 'https://i.pravatar.cc/150?img=9',
+    specialties: ['Acrylic Nails', 'Nail Art', 'Extension'],
+    experience: 4,
+    rating: 4.7,
+    totalReviews: 89,
+    isActive: true,
+    bio: 'Chuyên nối móng và vẽ nghệ thuật, phong cách sáng tạo độc đáo',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'tech-4',
+    name: 'Phạm Thị Lan',
+    email: 'lan@posnail.com',
+    phone: '0904234567',
+    avatar: 'https://i.pravatar.cc/150?img=10',
+    specialties: ['Gel Manicure', 'Gel Pedicure', 'Basic Care'],
+    experience: 3,
+    rating: 4.6,
+    totalReviews: 64,
+    isActive: true,
+    bio: 'Tư vấn chăm sóc móng tận tình, kỹ thuật gel chuyên nghiệp',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'tech-5',
+    name: 'Võ Thị Hạnh',
+    email: 'hanh@posnail.com',
+    phone: '0905234567',
+    avatar: 'https://i.pravatar.cc/150?img=16',
+    specialties: ['Spa Treatment', 'Premium Care', 'Deluxe Package'],
+    experience: 6,
+    rating: 4.9,
+    totalReviews: 156,
+    isActive: true,
+    bio: 'Chuyên gia spa cao cấp, mang đến trải nghiệm thư giãn tuyệt vời',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'tech-6',
+    name: 'Đỗ Thị Thanh',
+    email: 'thanh@posnail.com',
+    phone: '0906234567',
+    avatar: 'https://i.pravatar.cc/150?img=20',
+    specialties: ['Manicure', 'Pedicure', 'Nail Art'],
+    experience: 8,
+    rating: 5.0,
+    totalReviews: 312,
+    isActive: true,
+    bio: 'Kỹ thuật viên lão làng, tay nghề vàng trong nghề',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+]
+
+// ===== BOOKINGS (Sample) =====
+export const mockBookings: Booking[] = [
+  {
+    id: 'book-1',
+    name: 'Nguyễn Văn An',
+    phone: '0911111111',
+    email: 'an@example.com',
+    service: 'Gel Manicure',
+    technician: 'Nguyễn Thị Hương',
+    date: '2024-10-22',
+    time: '10:00',
+    status: 'confirmed',
+    notes: 'Muốn màu hồng pastel',
+    createdAt: '2024-10-20T08:00:00Z',
+    updatedAt: '2024-10-20T08:30:00Z',
+  },
+  {
+    id: 'book-2',
+    name: 'Trần Thị Bình',
+    phone: '0922222222',
+    email: 'binh@example.com',
+    service: 'Spa Pedicure',
+    technician: 'Trần Minh Châu',
+    date: '2024-10-22',
+    time: '14:00',
+    status: 'pending',
+    createdAt: '2024-10-20T09:00:00Z',
+    updatedAt: '2024-10-20T09:00:00Z',
+  },
+  {
+    id: 'book-3',
+    name: 'Lê Văn Cường',
+    phone: '0933333333',
+    email: 'cuong@example.com',
+    service: 'Premium Nail Art',
+    technician: 'Lê Thị Mai',
+    date: '2024-10-23',
+    time: '11:30',
+    status: 'confirmed',
+    notes: 'Vẽ hoa văn phong cách Nhật',
+    createdAt: '2024-10-20T10:00:00Z',
+    updatedAt: '2024-10-20T10:15:00Z',
+  },
+  {
+    id: 'book-4',
+    name: 'Phạm Thị Dung',
+    phone: '0944444444',
+    email: 'dung@example.com',
+    service: 'Deluxe Package',
+    technician: 'Võ Thị Hạnh',
+    date: '2024-10-24',
+    time: '09:00',
+    status: 'confirmed',
+    notes: 'Lần đầu đến, cần tư vấn',
+    createdAt: '2024-10-20T11:00:00Z',
+    updatedAt: '2024-10-20T11:20:00Z',
+  },
+  {
+    id: 'book-5',
+    name: 'Hoàng Văn Em',
+    phone: '0955555555',
+    service: 'Basic Manicure',
+    technician: 'Phạm Thị Lan',
+    date: '2024-10-21',
+    time: '15:30',
+    status: 'completed',
+    createdAt: '2024-10-19T08:00:00Z',
+    updatedAt: '2024-10-21T16:30:00Z',
+  },
+  {
+    id: 'book-6',
+    name: 'Võ Thị Phương',
+    phone: '0966666666',
+    email: 'phuong@example.com',
+    service: 'Acrylic Nails',
+    technician: 'Lê Thị Mai',
+    date: '2024-10-19',
+    time: '10:00',
+    status: 'cancelled',
+    notes: 'Bận đột xuất, xin lỗi',
+    createdAt: '2024-10-18T14:00:00Z',
+    updatedAt: '2024-10-19T08:00:00Z',
+  },
+]
+
+// ===== HELPER FUNCTIONS =====
+export const getServiceById = (id: string): Service | undefined => {
+  return mockServices.find((service) => service.id === id)
+}
+
+export const getServicesByCategory = (categoryId: string): Service[] => {
+  return mockServices.filter((service) => service.category === categoryId)
+}
+
+export const getTechnicianById = (id: string): Technician | undefined => {
+  return mockTechnicians.find((tech) => tech.id === id)
+}
+
+export const getAvailableTechnicians = (): Technician[] => {
+  return mockTechnicians.filter((tech) => tech.isActive)
+}
+
+export const getServiceCategoryById = (id: string): ServiceCategory | undefined => {
+  return mockServiceCategories.find((cat) => cat.id === id)
+}
+
+export const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)
+}
+
+export const formatDuration = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+
+  if (hours > 0 && mins > 0) {
+    return `${hours}h ${mins}m`
+  } else if (hours > 0) {
+    return `${hours}h`
+  } else {
+    return `${mins}m`
+  }
+}

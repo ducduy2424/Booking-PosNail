@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from 'components/ui/button'
 import { Input } from 'components/ui/input'
 import { Label } from 'components/ui/label'
@@ -25,6 +26,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   onSubmit,
   className = '',
 }) => {
+  const { t } = useTranslation()
   const [formData, setFormData] = React.useState({
     fullName: '',
     phone: '',
@@ -76,7 +78,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     <div className={`w-full max-w-4xl mx-auto px-6 ${className}`}>
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Book Your Appointment</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">{t('booking.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -84,12 +86,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="fullName" className="text-sm font-medium">
-                  Full Name <span className="text-red-500">*</span>
+                  {t('booking.firstName')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="fullName"
                   type="text"
-                  placeholder="Enter your full name"
+                  placeholder={t('booking.firstName')}
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
                   required
@@ -98,12 +100,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
               <div className="space-y-2">
                 <Label htmlFor="phone" className="text-sm font-medium">
-                  Phone <span className="text-red-500">*</span>
+                  {t('booking.phone_field')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="Enter your phone number"
+                  placeholder={t('booking.phone_field')}
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   required
@@ -112,12 +114,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
-                  Email
+                  {t('booking.email')}
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('booking.email')}
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                 />
@@ -129,7 +131,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({
               {appointmentSlots.map((slot, index) => (
                 <div key={slot.id} className="border rounded-lg p-4 bg-gray-50">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium">Appointment Slot {index + 1}</h3>
+                    <h3 className="font-medium">
+                      {t('booking.appointmentSlot')} {index + 1}
+                    </h3>
                     {appointmentSlots.length > 1 && (
                       <Button
                         type="button"
@@ -146,7 +150,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">
-                        Appointment time <span className="text-red-500">*</span>
+                        {t('booking.appointmentTime')} <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative">
                         <Input value={slot.time} readOnly className="bg-white" />
@@ -156,7 +160,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">
-                        Service <span className="text-red-500">*</span>
+                        {t('booking.service')} <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative">
                         <Input

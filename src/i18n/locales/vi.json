@@ -1,0 +1,74 @@
+{
+  "header": {
+    "brandName": "SENVERSE"
+  },
+  "booking": {
+    "title": "ĐẶT LỊCH HẸN",
+    "subtitle": "Vui lòng điền thông tin bên dưới để đặt lịch hẹn.",
+    "phone": "(023) 256-1548 | 08:00 SA - 10:00 CH",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "email": "Email",
+    "phone_field": "Số điện thoại",
+    "date": "Ngày",
+    "time": "Giờ",
+    "service": "Dịch vụ",
+    "technician": "Kỹ thuật viên",
+    "notes": "Ghi chú",
+    "submit": "Đặt lịch hẹn",
+    "selectService": "Chọn dịch vụ",
+    "selectTechnician": "Chọn kỹ thuật viên"
+  },
+  "services": {
+    "title": "Dịch vụ của chúng tôi",
+    "subtitle": "Dịch vụ chăm sóc móng chuyên nghiệp cho nhu cầu làm đẹp của bạn",
+    "bookNow": "Đặt ngay"
+  },
+  "technicians": {
+    "title": "Kỹ thuật viên",
+    "subtitle": "Gặp gỡ các kỹ thuật viên có tay nghề cao và kinh nghiệm",
+    "experience": "Kinh nghiệm",
+    "specialties": "Chuyên môn",
+    "bookWith": "Đặt lịch với"
+  },
+  "about": {
+    "title": "Về SENVERSE",
+    "subtitle": "Đối tác đáng tin cậy của bạn trong dịch vụ chăm sóc móng và làm đẹp"
+  },
+  "contact": {
+    "title": "Liên hệ",
+    "subtitle": "Liên hệ với chúng tôi để được tư vấn hoặc đặt lịch hẹn"
+  },
+  "profile": {
+    "title": "Lịch sử đặt lịch",
+    "subtitle": "Xem các cuộc hẹn đã qua và sắp tới",
+    "yourBookings": "Lịch hẹn của bạn",
+    "noBookings": "Chưa có lịch hẹn nào",
+    "bookFirst": "Đặt lịch hẹn đầu tiên",
+    "bookNew": "Đặt lịch hẹn mới",
+    "service": "Dịch vụ",
+    "technician": "Kỹ thuật viên",
+    "reschedule": "Đổi lịch",
+    "cancel": "Hủy"
+  },
+  "footer": {
+    "description": "SENVERSE là địa chỉ tin cậy cung cấp các dịch vụ chăm sóc móng và làm đẹp chuyên nghiệp, mang đến trải nghiệm tuyệt vời cho khách hàng.",
+    "company": "Công ty",
+    "contact": "Liên hệ",
+    "aboutLink": "Về chúng tôi",
+    "career": "Tuyển dụng",
+    "mobile": "Di động",
+    "whyUs": "Tại sao chọn chúng tôi?",
+    "partner": "Hợp tác với chúng tôi",
+    "faq": "Câu hỏi thường gặp",
+    "blog": "Blog",
+    "meetUs": "Địa chỉ",
+    "copyright": "© 2025 Senverse. Bảo lưu mọi quyền."
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Đã xảy ra lỗi",
+    "success": "Thành công"
+  }
+}
+

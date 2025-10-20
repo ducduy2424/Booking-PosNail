@@ -1,0 +1,74 @@
+{
+  "header": {
+    "brandName": "SENVERSE"
+  },
+  "booking": {
+    "title": "BOOK APPOINTMENT",
+    "subtitle": "Please fill in the information below to book an appointment.",
+    "phone": "(023) 256-1548 | 08:00 AM - 10:00 PM",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone_field": "Phone",
+    "date": "Date",
+    "time": "Time",
+    "service": "Service",
+    "technician": "Technician",
+    "notes": "Notes",
+    "submit": "Book Appointment",
+    "selectService": "Select Service",
+    "selectTechnician": "Select Technician"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Professional nail care services for your beauty needs",
+    "bookNow": "Book Now"
+  },
+  "technicians": {
+    "title": "Our Technicians",
+    "subtitle": "Meet our skilled and experienced nail technicians",
+    "experience": "Experience",
+    "specialties": "Specialties",
+    "bookWith": "Book with"
+  },
+  "about": {
+    "title": "About SENVERSE",
+    "subtitle": "Your trusted partner in nail care and beauty services"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with us for any questions or to book an appointment"
+  },
+  "profile": {
+    "title": "Booking History",
+    "subtitle": "View your past and upcoming appointments",
+    "yourBookings": "Your Bookings",
+    "noBookings": "No bookings yet",
+    "bookFirst": "Book Your First Appointment",
+    "bookNew": "Book New Appointment",
+    "service": "Service",
+    "technician": "Technician",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel"
+  },
+  "footer": {
+    "description": "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC.",
+    "company": "Company",
+    "contact": "Contact",
+    "aboutLink": "About",
+    "career": "Career",
+    "mobile": "Mobile",
+    "whyUs": "Why Booking Nails?",
+    "partner": "Partner with us",
+    "faq": "FAQ's",
+    "blog": "Blog",
+    "meetUs": "Meet Us",
+    "copyright": "© 2025 Senverse. All rights reserved."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success"
+  }
+}
+

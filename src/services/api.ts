@@ -1,73 +1,69 @@
-// API Service Configuration
-// You can use fetch or install axios: npm install axios
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001'
-
-interface ApiResponse<T> {
-  data: T
-  error?: string
-}
+import type { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios'
+import axios from 'axios'
+import { API_CONFIG } from '../config/api'
 
 class ApiService {
-  private baseURL: string
+  private instance: AxiosInstance
 
-  constructor(baseURL: string) {
-    this.baseURL = baseURL
+  constructor() {
+    this.instance = axios.create({
+      baseURL: API_CONFIG.BASE_URL,
+      timeout: API_CONFIG.TIMEOUT,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    this.setupInterceptors()
   }
 
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`)
-      const data = await response.json()
-      return { data }
-    } catch (error) {
-      return { data: null as any, error: (error as Error).message }
-    }
+  // Removed authentication methods - no login required for booking
+
+  private getLocalization(): string {
+    return localStorage.getItem('i18nextLng') || 'vi'
   }
 
-  async post<T>(endpoint: string, body: any): Promise<ApiResponse<T>> {
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
-      const data = await response.json()
-      return { data }
-    } catch (error) {
-      return { data: null as any, error: (error as Error).message }
-    }
+  private setupInterceptors() {
+    this.instance.interceptors.request.use(
+      (config) => {
+        // Only add localization header - no authentication needed
+        const localization = this.getLocalization()
+        config.headers['X-localization'] = localization
+
+        return config
+      },
+      (error) => Promise.reject(error)
+    )
+
+    this.instance.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error) => {
+        // Simple error handling - no token refresh needed
+        console.error('API Error:', error.response?.data || error.message)
+        return Promise.reject(error)
+      }
+    )
   }
 
-  async put<T>(endpoint: string, body: any): Promise<ApiResponse<T>> {
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
-      const data = await response.json()
-      return { data }
-    } catch (error) {
-      return { data: null as any, error: (error as Error).message }
-    }
+  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.get(url, config)
   }
 
-  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        method: 'DELETE',
-      })
-      const data = await response.json()
-      return { data }
-    } catch (error) {
-      return { data: null as any, error: (error as Error).message }
-    }
+  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.post(url, data, config)
+  }
+
+  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.put(url, data, config)
+  }
+
+  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.patch(url, data, config)
+  }
+
+  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.delete(url, config)
   }
 }
 
-export const apiService = new ApiService(API_BASE_URL)
+export const apiService = new ApiService()

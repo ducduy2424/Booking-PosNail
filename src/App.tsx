@@ -1,9 +1,9 @@
 import React from 'react'
-import { BookingPage } from 'pages/BookingPage'
+import AppRouter from 'components/router/AppRouter'
 import './App.css'
 
 function App() {
-  return <BookingPage />
+  return <AppRouter />
 }
 
 export default App

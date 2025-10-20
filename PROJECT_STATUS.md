@@ -101,7 +101,7 @@ booking-frontend/
 │   │   ├── common/         # ✅ Common wrappers (1 file)
 │   │   ├── forms/          # 📦 Ready for forms
 │   │   └── layout/         # ✅ MainLayout (1 file)
-│   ├── pages/              # ✅ HomePage (1 file)
+│   ├── pages/              # ✅ BookingPage as default (6 files)
 │   ├── store/              # ✅ Redux setup complete
 │   │   ├── index.ts
 │   │   ├── hooks.ts

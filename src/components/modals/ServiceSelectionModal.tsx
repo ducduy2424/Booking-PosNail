@@ -1,17 +1,11 @@
 import React from 'react'
 import { Button } from 'components/ui/button'
 import { Input } from 'components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from 'components/ui/card'
+import { Card, CardContent } from 'components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from 'components/ui/dialog'
 import { Search, Plus, Minus } from 'lucide-react'
-
-interface Service {
-  id: string
-  name: string
-  price: number
-  category: string
-  icon?: string
-}
+import { mockServices, mockServiceCategories, formatPrice } from 'data/mockData'
+import type { Service } from 'store/slices/serviceSlice'
 
 interface ServiceSelectionModalProps {
   isOpen: boolean
@@ -20,36 +14,19 @@ interface ServiceSelectionModalProps {
   services?: Service[]
 }
 
-const defaultServices: Service[] = [
-  { id: '1', name: 'Basic Manicure', price: 20, category: 'Nail Polish' },
-  { id: '2', name: 'French Manicure', price: 25, category: 'Nail Polish' },
-  { id: '3', name: 'Gel Manicure', price: 30, category: 'Nail Polish' },
-  { id: '4', name: 'Nail Art', price: 35, category: 'Nail Art and Decoration' },
-  { id: '5', name: 'Nail Extension', price: 50, category: 'Nail Extensions' },
-  { id: '6', name: 'Nail Repair', price: 15, category: 'Maintenance' },
-]
-
-const categories = [
-  { id: 'nail-polish', name: 'Nail Polish', icon: '💅' },
-  { id: 'nail-nourishment', name: 'Nail Nourishment', icon: '💅' },
-  { id: 'nail-art', name: 'Nail Art and Decoration', icon: '🎨' },
-  { id: 'nail-extensions', name: 'Nail Extensions', icon: '💅' },
-  { id: 'maintenance', name: 'Maintenance', icon: '🔧' },
-]
-
 export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  services = defaultServices,
+  services = mockServices,
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [selectedCategory, setSelectedCategory] = React.useState('nail-polish')
+  const [selectedCategory, setSelectedCategory] = React.useState(mockServiceCategories[0]?.id || '')
   const [selectedServices, setSelectedServices] = React.useState<{ [key: string]: number }>({})
 
   const filteredServices = services.filter((service) => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = service.category.toLowerCase().includes(selectedCategory.replace('-', ' '))
+    const matchesCategory = !selectedCategory || service.category === selectedCategory
     return matchesSearch && matchesCategory
   })
 
@@ -103,7 +80,7 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({
 
           {/* Category Selection */}
           <div className="flex space-x-2 overflow-x-auto pb-2">
-            {categories.map((category) => (
+            {mockServiceCategories.map((category) => (
               <Button
                 key={category.id}
                 variant={selectedCategory === category.id ? 'default' : 'outline'}
@@ -137,7 +114,8 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h4 className="font-medium text-sm">{service.name}</h4>
-                          <p className="text-lg font-bold text-blue-600">${service.price}</p>
+                          <p className="text-xs text-gray-500 mb-1">{service.description}</p>
+                          <p className="text-lg font-bold text-blue-600">{formatPrice(service.price)}</p>
                         </div>
 
                         <div className="flex items-center space-x-2">
