@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
-import usFlag from 'assets/images/languages/us.svg'
-import vnFlag from 'assets/images/languages/vietnam.svg'
+import usFlag from 'assets/images/languages/usa-circle.svg'
+import vnFlag from 'assets/images/languages/vietnam-circle.svg'
 
 interface Language {
   code: string
