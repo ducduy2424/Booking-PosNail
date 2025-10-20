@@ -17,11 +17,12 @@
     "notes": "Notes",
     "submit": "Book Appointment",
     "selectService": "Select Service",
-    "selectTechnician": "Select Technician"
+    "selectTechnician": "Select Technician",
+    "appointmentTime": "Appointment time" 
   },
   "services": {
-    "title": "Our Services",
-    "subtitle": "Professional nail care services for your beauty needs",
+    "title": "Select Services",
+    "search": "Search",
     "bookNow": "Book Now"
   },
   "technicians": {

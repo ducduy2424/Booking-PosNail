@@ -5,10 +5,11 @@ import { Input } from 'components/ui/input'
 import { Label } from 'components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from 'components/ui/card'
 import { Calendar, Clock, User, Plus, Minus } from 'lucide-react'
+import { DatePicker } from 'components/ui/date-picker'
 
 interface AppointmentSlot {
   id: string
-  time: string
+  time: Date | undefined
   service: string
   technician: string
 }
@@ -36,7 +37,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [appointmentSlots, setAppointmentSlots] = React.useState<AppointmentSlot[]>([
     {
       id: '1',
-      time: '10:00, 09/09/2025',
+      time: undefined,
       service: '',
       technician: '',
     },
@@ -53,7 +54,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const addSlot = () => {
     const newSlot: AppointmentSlot = {
       id: Date.now().toString(),
-      time: '10:00, 09/09/2025',
+      time: undefined,
       service: '',
       technician: '',
     }
@@ -130,32 +131,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             <div className="space-y-4">
               {appointmentSlots.map((slot, index) => (
                 <div key={slot.id} className="border rounded-lg p-4 bg-gray-50">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium">
-                      {t('booking.appointmentSlot')} {index + 1}
-                    </h3>
-                    {appointmentSlots.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeSlot(slot.id)}
-                        className="w-8 h-8 p-0"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">
                         {t('booking.appointmentTime')} <span className="text-red-500">*</span>
                       </Label>
-                      <div className="relative">
-                        <Input value={slot.time} readOnly className="bg-white" />
-                        <Calendar className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
-                      </div>
+                      <DatePicker
+                        value={slot.time}
+                        onChange={(date) => handleSlotChange(slot.id, 'time', date as any)}
+                        placeholder={t('booking.appointmentTime')}
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -164,7 +149,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       </Label>
                       <div className="relative">
                         <Input
-                          placeholder="Select service"
+                          placeholder={t('booking.selectService')}
                           value={slot.service}
                           readOnly
                           onClick={onServiceSelect}
@@ -183,11 +168,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">
-                        Choose a technician <span className="text-red-500">*</span>
+                        {t('booking.selectTechnician')} <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative">
                         <Input
-                          placeholder="Select staff"
+                          placeholder={t('booking.selectTechnician')}
                           value={slot.technician}
                           readOnly
                           onClick={onTechnicianSelect}
@@ -196,14 +181,36 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                         <User className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
                       </div>
                     </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-end justify-center gap-2.5 p-2.5 sm:justify-end sm:gap-2 sm:p-0">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeSlot(slot.id)}
+                        className={`w-8 h-8 p-0 rounded-full ${
+                          index === 0
+                            ? 'bg-gray-200 hover:bg-gray-200 cursor-not-allowed'
+                            : 'bg-gray-200 hover:bg-red-500 hover:text-white'
+                        }`}
+                        disabled={index === 0}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addSlot}
+                        className="w-8 h-8 p-0 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
-
-              <Button type="button" variant="outline" onClick={addSlot} className="w-full">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Another Appointment
-              </Button>
             </div>
 
             {/* Submit Button */}

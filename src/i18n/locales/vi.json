@@ -17,11 +17,12 @@
     "notes": "Ghi chú",
     "submit": "Đặt lịch hẹn",
     "selectService": "Chọn dịch vụ",
-    "selectTechnician": "Chọn kỹ thuật viên"
+    "selectTechnician": "Chọn kỹ thuật viên",
+    "appointmentTime": "Thời gian đặt lịch"
   },
   "services": {
-    "title": "Dịch vụ của chúng tôi",
-    "subtitle": "Dịch vụ chăm sóc móng chuyên nghiệp cho nhu cầu làm đẹp của bạn",
+    "title": "Chọn dịch vụ",
+    "search": "Tìm kiếm",
     "bookNow": "Đặt ngay"
   },
   "technicians": {

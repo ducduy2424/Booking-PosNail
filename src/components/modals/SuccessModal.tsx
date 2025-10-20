@@ -1,7 +1,8 @@
 import React from 'react'
 import { Button } from 'components/ui/button'
 import { Dialog, DialogContent } from 'components/ui/dialog'
-import { CheckCircle, Calendar, Bell, X } from 'lucide-react'
+import { X } from 'lucide-react'
+import bookingSuccessImage from 'assets/images/components/booking_success.png'
 
 interface SuccessModalProps {
   isOpen: boolean
@@ -18,24 +19,9 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose, boo
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md mx-auto">
         <div className="text-center space-y-6 py-6">
-          {/* Success Icon */}
-          <div className="relative mx-auto w-24 h-24">
-            {/* Calendar Icon */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 bg-white rounded-lg shadow-lg flex items-center justify-center">
-                <Calendar className="w-10 h-10 text-blue-500" />
-              </div>
-            </div>
-
-            {/* Check Circle */}
-            <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-              <CheckCircle className="w-8 h-8 text-white" />
-            </div>
-
-            {/* Bell Icon */}
-            <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Bell className="w-5 h-5 text-white" />
-            </div>
+          {/* Success Image */}
+          <div className="flex justify-center">
+            <img src={bookingSuccessImage} alt="Booking Successful" className="w-32 h-32 object-contain" />
           </div>
 
           {/* Success Message */}
