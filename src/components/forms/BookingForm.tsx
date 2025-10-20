@@ -1,0 +1,216 @@
+import React from 'react'
+import { Button } from 'components/ui/button'
+import { Input } from 'components/ui/input'
+import { Label } from 'components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from 'components/ui/card'
+import { Calendar, Clock, User, Plus, Minus } from 'lucide-react'
+
+interface AppointmentSlot {
+  id: string
+  time: string
+  service: string
+  technician: string
+}
+
+interface BookingFormProps {
+  onServiceSelect?: () => void
+  onTechnicianSelect?: () => void
+  onSubmit?: (data: any) => void
+  className?: string
+}
+
+export const BookingForm: React.FC<BookingFormProps> = ({
+  onServiceSelect,
+  onTechnicianSelect,
+  onSubmit,
+  className = '',
+}) => {
+  const [formData, setFormData] = React.useState({
+    fullName: '',
+    phone: '',
+    email: '',
+  })
+
+  const [appointmentSlots, setAppointmentSlots] = React.useState<AppointmentSlot[]>([
+    {
+      id: '1',
+      time: '10:00, 09/09/2025',
+      service: '',
+      technician: '',
+    },
+  ])
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleSlotChange = (slotId: string, field: string, value: string) => {
+    setAppointmentSlots((prev) => prev.map((slot) => (slot.id === slotId ? { ...slot, [field]: value } : slot)))
+  }
+
+  const addSlot = () => {
+    const newSlot: AppointmentSlot = {
+      id: Date.now().toString(),
+      time: '10:00, 09/09/2025',
+      service: '',
+      technician: '',
+    }
+    setAppointmentSlots((prev) => [...prev, newSlot])
+  }
+
+  const removeSlot = (slotId: string) => {
+    if (appointmentSlots.length > 1) {
+      setAppointmentSlots((prev) => prev.filter((slot) => slot.id !== slotId))
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSubmit?.({
+      ...formData,
+      appointmentSlots,
+    })
+  }
+
+  return (
+    <div className={`w-full max-w-4xl mx-auto px-6 ${className}`}>
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Book Your Appointment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Information */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-sm font-medium">
+                  Full Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-sm font-medium">
+                  Phone <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="Enter your phone number"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Appointment Slots */}
+            <div className="space-y-4">
+              {appointmentSlots.map((slot, index) => (
+                <div key={slot.id} className="border rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-medium">Appointment Slot {index + 1}</h3>
+                    {appointmentSlots.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeSlot(slot.id)}
+                        className="w-8 h-8 p-0"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">
+                        Appointment time <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Input value={slot.time} readOnly className="bg-white" />
+                        <Calendar className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">
+                        Service <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          placeholder="Select service"
+                          value={slot.service}
+                          readOnly
+                          onClick={onServiceSelect}
+                          className="bg-white cursor-pointer"
+                        />
+                        <svg
+                          className="absolute right-3 top-3 w-4 h-4 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">
+                        Choose a technician <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          placeholder="Select staff"
+                          value={slot.technician}
+                          readOnly
+                          onClick={onTechnicianSelect}
+                          className="bg-white cursor-pointer"
+                        />
+                        <User className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <Button type="button" variant="outline" onClick={addSlot} className="w-full">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Another Appointment
+              </Button>
+            </div>
+
+            {/* Submit Button */}
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg">
+              Book now
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default BookingForm
