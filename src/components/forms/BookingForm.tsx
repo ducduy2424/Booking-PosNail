@@ -5,7 +5,7 @@ import { Input } from 'components/ui/input'
 import { Label } from 'components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from 'components/ui/card'
 import { Calendar, Clock, User, Plus, Minus } from 'lucide-react'
-import { DatePicker } from 'components/ui/date-picker'
+import { DateTimePicker } from 'components/ui/datetime-picker'
 
 interface AppointmentSlot {
   id: string
@@ -47,7 +47,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSlotChange = (slotId: string, field: string, value: string) => {
+  const handleSlotChange = (slotId: string, field: string, value: string | Date) => {
     setAppointmentSlots((prev) => prev.map((slot) => (slot.id === slotId ? { ...slot, [field]: value } : slot)))
   }
 
@@ -136,9 +136,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       <Label className="text-sm font-medium">
                         {t('booking.appointmentTime')} <span className="text-red-500">*</span>
                       </Label>
-                      <DatePicker
+                      <DateTimePicker
                         value={slot.time}
-                        onChange={(date) => handleSlotChange(slot.id, 'time', date as any)}
+                        onChange={(date: Date | undefined) => handleSlotChange(slot.id, 'time', date as any)}
                         placeholder={t('booking.appointmentTime')}
                       />
                     </div>
