@@ -108,11 +108,11 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[90vw] sm:w-auto h-[400px] sm:h-[380px] p-0 rounded-2xl shadow-2xl bg-white overflow-hidden border-2 border-gray-100"
+        className="w-[90vw] sm:w-auto max-h-[90vh] sm:h-[380px] p-0 rounded-2xl shadow-2xl bg-white overflow-auto sm:overflow-hidden border-2 border-gray-100"
         align="start"
       >
         <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-200">
-          <div className="h-[400px] sm:h-[380px] flex items-center justify-center">
+          <div className="sm:h-[380px] flex items-center justify-center">
             <Calendar
               mode="single"
               selected={date}
@@ -125,9 +125,9 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
               className="sm:rounded-l-2xl"
             />
           </div>
-          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-200 bg-gray-50 h-[400px] sm:h-[380px]">
+          <div className="flex flex-row sm:flex-row divide-x sm:divide-x divide-gray-200 bg-gray-50 min-h-[120px] sm:h-[380px]">
             {/* Hours Column */}
-            <div className="flex flex-col p-3 w-full sm:w-20">
+            <div className="flex flex-col p-3 w-1/2 sm:w-20">
               <div className="text-xs font-semibold text-gray-700 mb-3 text-center uppercase tracking-wide">Hours</div>
               <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-y-auto flex-1 pb-2 sm:pb-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                 {hours.map((hour) => (
@@ -150,7 +150,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
             </div>
 
             {/* Minutes Column */}
-            <div className="flex flex-col p-3 w-full sm:w-20">
+            <div className="flex flex-col p-3 w-1/2 sm:w-20">
               <div className="text-xs font-semibold text-gray-700 mb-3 text-center uppercase tracking-wide">
                 Minutes
               </div>

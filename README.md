@@ -9,12 +9,19 @@
 - **TypeScript** - Superset của JavaScript với static typing
 - **Redux Toolkit** - Quản lý state hiện đại và hiệu quả
 - **React Redux** - Tích hợp Redux với React
+- **React Router v6** - Routing và navigation cho React apps
 
 ### UI Frameworks
 - **shadcn/ui** - Re-usable components built with Radix UI and Tailwind CSS
 - **Tailwind CSS v3** - Utility-first CSS framework cho styling nhanh chóng
 - **Radix UI** - Unstyled, accessible UI primitives
 - **Lucide React** - Beautiful & consistent icon library (546+ icons)
+- **react-day-picker v9** - Flexible date picker component
+
+### Internationalization
+- **i18next** - Internationalization framework
+- **react-i18next** - React bindings cho i18next
+- **date-fns** - Modern date utility library
 
 ### Development Tools
 - **Prettier** - Code formatter để đảm bảo code style nhất quán
@@ -25,7 +32,10 @@
 ### Features
 - ✅ TypeScript support với path aliasing
 - ✅ Redux Toolkit cho state management
+- ✅ React Router v6 với lazy loading
+- ✅ Internationalization (i18n) - English & Tiếng Việt
 - ✅ shadcn/ui components (customizable & accessible)
+- ✅ Custom DateTime Picker với calendar
 - ✅ Tailwind CSS với design system
 - ✅ Dark mode support
 - ✅ ESLint + Prettier tích hợp hoàn chỉnh
@@ -99,23 +109,63 @@ src/
 │   │   ├── button.tsx
 │   │   ├── card.tsx
 │   │   ├── input.tsx
-│   │   └── label.tsx
+│   │   ├── label.tsx
+│   │   ├── calendar.tsx
+│   │   ├── datetime-picker.tsx
+│   │   ├── dialog.tsx
+│   │   └── popover.tsx
 │   ├── common/         # Common UI components
-│   │   └── Button.tsx
+│   │   ├── Button.tsx
+│   │   ├── LoadingSpinner.tsx
+│   │   └── LanguageDropdown.tsx
 │   ├── forms/          # Form components
+│   │   └── BookingForm.tsx
+│   ├── modals/         # Modal components
+│   │   ├── ServiceSelectionModal.tsx
+│   │   ├── TechnicianSelectionModal.tsx
+│   │   └── SuccessModal.tsx
+│   ├── navigation/     # Navigation components
+│   ├── router/         # Router components
+│   │   └── AppRouter.tsx
 │   └── layout/         # Layout components
+│       ├── Header.tsx
+│       ├── Footer.tsx
 │       └── MainLayout.tsx
 ├── pages/              # Page components
-│   └── BookingPage.tsx  # Default home page
+│   ├── BookingPage.tsx      # Default home page
+│   ├── ServicesPage.tsx
+│   ├── TechniciansPage.tsx
+│   ├── AboutPage.tsx
+│   ├── ContactPage.tsx
+│   └── ProfilePage.tsx
+├── routes/             # Route configuration
+│   └── index.ts
+├── i18n/               # Internationalization
+│   ├── config.ts       # i18next configuration
+│   ├── types.ts
+│   ├── locales/
+│   │   ├── en.json     # English translations
+│   │   └── vi.json     # Vietnamese translations
+│   └── README.md
 ├── store/              # Redux store configuration
 │   ├── index.ts        # Store setup
 │   ├── slices/         # Redux slices
-│   │   └── exampleSlice.ts
+│   │   ├── bookingSlice.ts
+│   │   ├── serviceSlice.ts
+│   │   └── technicianSlice.ts
 │   └── hooks.ts        # Typed hooks
 ├── services/           # API services
-│   └── api.ts
+│   ├── api.ts
+│   ├── bookingService.ts
+│   ├── serviceService.ts
+│   └── technicianService.ts
+├── config/             # Configuration
+│   ├── api.ts
+│   └── endpoints.ts
 ├── hooks/              # Custom React hooks
-│   └── useDebounce.ts
+│   ├── useDebounce.ts
+│   ├── useMobile.ts
+│   └── usePageTitle.ts
 ├── utils/              # Utility functions
 │   └── helpers.ts
 ├── types/              # TypeScript type definitions
@@ -124,10 +174,13 @@ src/
 │   └── utils.ts        # cn() utility
 ├── assets/             # Static assets
 │   ├── images/
+│   │   ├── logo/
+│   │   ├── languages/
+│   │   └── background/
 │   └── icons/
 ├── styles/             # Global styles
 ├── App.tsx             # Main App component
-├── index.tsx           # Entry point (with Redux Provider)
+├── index.tsx           # Entry point (with Redux & i18n)
 └── index.css           # Global CSS (with Tailwind directives)
 ```
 
@@ -278,7 +331,28 @@ import { Label } from 'components/ui/label'
 <Label htmlFor="email">Email Address</Label>
 ```
 
-### 5. **Icons** (Lucide React)
+### 5. **Calendar & DateTime Picker** (`components/ui/calendar.tsx`, `components/ui/datetime-picker.tsx`)
+```typescript
+import { Calendar } from 'components/ui/calendar'
+import { DateTimePicker } from 'components/ui/datetime-picker'
+
+// Calendar với dropdown month/year
+<Calendar
+  mode="single"
+  selected={date}
+  onSelect={setDate}
+  captionLayout="dropdown"
+/>
+
+// DateTime Picker
+<DateTimePicker
+  value={date}
+  onChange={setDate}
+  placeholder="Pick a date and time"
+/>
+```
+
+### 6. **Icons** (Lucide React)
 ```typescript
 import { Home, User, Settings, Search, Menu, X } from 'lucide-react'
 
@@ -397,15 +471,84 @@ root.render(
 )
 ```
 
+## 🌍 Internationalization (i18n)
+
+Project hỗ trợ đa ngôn ngữ với i18next:
+
+### Ngôn ngữ được hỗ trợ:
+- 🇺🇸 English (en)
+- 🇻🇳 Tiếng Việt (vi)
+
+### Sử dụng trong component:
+```typescript
+import { useTranslation } from 'react-i18next'
+
+function MyComponent() {
+  const { t, i18n } = useTranslation()
+  
+  return (
+    <div>
+      <h1>{t('booking.title')}</h1>
+      <button onClick={() => i18n.changeLanguage('vi')}>
+        Tiếng Việt
+      </button>
+    </div>
+  )
+}
+```
+
+Chi tiết: [src/i18n/README.md](src/i18n/README.md)
+
+## 🗺️ Routing
+
+Project sử dụng React Router v6 với các routes sau:
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | BookingPage | Homepage - Booking form |
+| `/booking` | BookingPage | Booking form |
+| `/services` | ServicesPage | Services list |
+| `/technicians` | TechniciansPage | Technicians list |
+| `/about` | AboutPage | About us |
+| `/contact` | ContactPage | Contact page |
+| `/profile` | ProfilePage | User profile |
+
+### Navigation:
+```typescript
+import { useNavigate } from 'react-router-dom'
+
+function MyComponent() {
+  const navigate = useNavigate()
+  
+  return (
+    <button onClick={() => navigate('/booking')}>
+      Go to Booking
+    </button>
+  )
+}
+```
+
 ## 📚 Tài liệu tham khảo
 
+### Core
 - [React Documentation](https://react.dev/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Redux Toolkit](https://redux-toolkit.js.org/)
+- [React Router](https://reactrouter.com/)
+
+### UI & Styling
 - [shadcn/ui Documentation](https://ui.shadcn.com/)
 - [Radix UI](https://www.radix-ui.com/)
 - [Tailwind CSS](https://tailwindcss.com/docs)
 - [Lucide Icons](https://lucide.dev/)
+- [react-day-picker](https://daypicker.dev/)
+
+### i18n & Date
+- [i18next Documentation](https://www.i18next.com/)
+- [react-i18next](https://react.i18next.com/)
+- [date-fns](https://date-fns.org/)
+
+### Code Quality
 - [ESLint Rules](https://eslint.org/docs/rules/)
 - [Prettier Options](https://prettier.io/docs/en/options.html)
 
