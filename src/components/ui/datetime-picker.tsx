@@ -23,12 +23,13 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   disabled = false,
 }) => {
   const [date, setDate] = React.useState<Date | undefined>(value)
-  const [month, setMonth] = React.useState<Date | undefined>(date)
+  const [month, setMonth] = React.useState<Date | undefined>(value || new Date())
   const [isOpen, setIsOpen] = React.useState(false)
 
+  // Sync with external value changes
   React.useEffect(() => {
+    setDate(value)
     if (value) {
-      setDate(value)
       setMonth(value)
     }
   }, [value])

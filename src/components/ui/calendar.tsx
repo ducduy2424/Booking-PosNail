@@ -30,6 +30,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         width: 36px !important;
         min-width: 36px !important;
         max-width: 36px !important;
+        font-weight: 600;
         flex: 0 0 36px !important;
         display: flex !important;
         align-items: center !important;
@@ -38,6 +39,25 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       
       .rdp-day {
         height: 40px !important;
+      }
+
+      /* Active/Pressed state for day buttons */
+      .rdp-day_button:active,
+      .rdp-day:active {
+        transform: scale(0.95) !important;
+      }
+
+      /* Selected day enhanced style */
+      .rdp-day_selected {
+        background-color: #1B365D !important;
+        color: white !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        transform: scale(1.05) !important;
+      }
+
+      .rdp-day_selected:hover {
+        background-color: #1B365D !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
       }
 
       /* Dropdown */
@@ -127,12 +147,12 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         week: 'flex w-full justify-around mt-0.5',
         day: cn(
           buttonVariants({ variant: 'ghost' }),
-          'h-10 w-9 p-0 font-semibold text-gray-700 aria-selected:opacity-100 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:scale-110 flex-[0_0_36px]'
+          'h-10 w-9 p-0 font-semibold text-gray-700 aria-selected:opacity-100 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200 hover:scale-105 flex-[0_0_36px]'
         ),
         day_button: 'w-full h-full',
         day_selected:
           'bg-[#1B365D] text-white hover:bg-[#1B365D] hover:text-white focus:bg-[#1B365D] focus:text-white shadow-md scale-105',
-        day_today: 'border-2 border-[#1B365D] text-[#1B365D] bg-blue-50 font-bold',
+        day_today: 'border-2 border-[#1B365D] text-[#1B365D] bg-white font-bold hover:bg-white',
         day_outside:
           'day-outside text-gray-400 opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
         day_disabled: 'text-muted-foreground opacity-50',

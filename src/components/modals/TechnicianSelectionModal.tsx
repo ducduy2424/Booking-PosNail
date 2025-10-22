@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from 'components/ui/button'
 import { Input } from 'components/ui/input'
-import { Dialog, DialogContent } from 'components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'components/ui/dialog'
 import { Search, Check } from 'lucide-react'
 import { mockTechnicians } from 'data/mockData'
 import type { Technician } from 'store/slices/technicianSlice'
@@ -45,6 +45,10 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
         className="w-full max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-hidden mx-4 sm:mx-auto"
         autoFocus={false}
       >
+        <DialogTitle className="sr-only">Please select technician</DialogTitle>
+        <DialogDescription className="sr-only">
+          Choose a technician for your appointment. You can search and select from available technicians.
+        </DialogDescription>
         {/* Header */}
         <div className="px-4 sm:px-6 py-4 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
