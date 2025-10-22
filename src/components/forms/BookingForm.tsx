@@ -9,7 +9,6 @@ import { DateTimePicker } from 'components/ui/datetime-picker'
 
 interface AppointmentSlot {
   id: string
-  time: Date | undefined
   service: string
   technician: string
 }
@@ -30,14 +29,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const { t } = useTranslation()
   const [formData, setFormData] = React.useState({
     fullName: '',
+    lastName: '',
     phone: '',
     email: '',
   })
 
+  const [appointmentTime, setAppointmentTime] = React.useState<Date | undefined>(undefined)
+
   const [appointmentSlots, setAppointmentSlots] = React.useState<AppointmentSlot[]>([
     {
       id: '1',
-      time: undefined,
       service: '',
       technician: '',
     },
@@ -54,7 +55,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const addSlot = () => {
     const newSlot: AppointmentSlot = {
       id: Date.now().toString(),
-      time: undefined,
       service: '',
       technician: '',
     }
@@ -71,6 +71,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     e.preventDefault()
     onSubmit?.({
       ...formData,
+      appointmentTime,
       appointmentSlots,
     })
   }
@@ -84,65 +85,90 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-medium">
-                  {t('booking.firstName')} <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder={t('booking.firstName')}
-                  value={formData.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  required
-                />
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-sm font-medium">
+                    {t('booking.firstName')} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder={t('booking.firstName')}
+                    value={formData.fullName}
+                    onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-sm font-medium">
+                    {t('booking.lastName')} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder={t('booking.lastName')}
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium">
-                  {t('booking.phone_field')} <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder={t('booking.phone_field')}
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  required
-                />
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm font-medium">
+                    {t('booking.phone_field')} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder={t('booking.phone_field')}
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    required
+                  />
+                </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    {t('booking.email')}
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder={t('booking.email')}
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Appointment Time Section */}
+            <div className="rounded-lg p-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  {t('booking.email')}
+                <Label className="text-sm font-medium">
+                  {t('booking.appointmentTime')} <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t('booking.email')}
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                <DateTimePicker
+                  value={appointmentTime}
+                  onChange={(date: Date | undefined) => setAppointmentTime(date)}
+                  placeholder={t('booking.appointmentTime')}
                 />
               </div>
             </div>
 
-            {/* Appointment Slots */}
+            {/* Services & Technicians Section */}
             <div className="space-y-4">
               {appointmentSlots.map((slot, index) => (
-                <div key={slot.id} className="border rounded-lg p-4 bg-gray-50">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">
-                        {t('booking.appointmentTime')} <span className="text-red-500">*</span>
-                      </Label>
-                      <DateTimePicker
-                        value={slot.time}
-                        onChange={(date: Date | undefined) => handleSlotChange(slot.id, 'time', date as any)}
-                        placeholder={t('booking.appointmentTime')}
-                      />
-                    </div>
-
+                <div
+                  key={slot.id}
+                  className="border rounded-lg py-4 px-0 bg-gray-50 flex justify-center "
+                  style={{ width: '96%' }}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">
                         {t('booking.service')} <span className="text-red-500">*</span>
@@ -183,7 +209,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-end justify-center gap-2.5 p-2.5 sm:justify-end sm:gap-2 sm:p-0">
+                    <div className="flex items-end gap-2.5 p-2.5 sm:justify-end sm:gap-2 sm:p-0 justify-center">
                       <Button
                         type="button"
                         variant="outline"

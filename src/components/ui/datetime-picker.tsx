@@ -23,29 +23,47 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   disabled = false,
 }) => {
   const [date, setDate] = React.useState<Date | undefined>(value)
+  const [month, setMonth] = React.useState<Date | undefined>(date)
   const [isOpen, setIsOpen] = React.useState(false)
 
   React.useEffect(() => {
     if (value) {
       setDate(value)
+      setMonth(value)
     }
   }, [value])
+
+  // Reset date when popover opens if no date is selected
+  React.useEffect(() => {
+    if (isOpen && !date) {
+      const today = new Date()
+      today.setHours(9, 0, 0, 0)
+      setDate(today)
+      setMonth(today)
+    }
+  }, [isOpen, date])
 
   const hours = Array.from({ length: 24 }, (_, i) => i)
   const minutes = Array.from({ length: 12 }, (_, i) => i * 5)
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
+      // Create a new date object to avoid mutation issues
+      const newDate = new Date(selectedDate)
+
       // If there's already a time set, preserve it
       if (date) {
-        selectedDate.setHours(date.getHours())
-        selectedDate.setMinutes(date.getMinutes())
+        newDate.setHours(date.getHours())
+        newDate.setMinutes(date.getMinutes())
+        newDate.setSeconds(0)
+        newDate.setMilliseconds(0)
       } else {
         // Default to 9:00 AM
-        selectedDate.setHours(9, 0, 0, 0)
+        newDate.setHours(9, 0, 0, 0)
       }
-      setDate(selectedDate)
-      onChange?.(selectedDate)
+      setDate(newDate)
+      setMonth(newDate)
+      onChange?.(newDate)
     }
   }
 
@@ -68,6 +86,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         newDate.setMinutes(parseInt(value))
       }
       setDate(newDate)
+      setMonth(newDate)
       onChange?.(newDate)
     }
   }
@@ -85,7 +104,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           disabled={disabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-          <span className="truncate">{date ? format(date, 'dd/MM/yyyy HH:mm') : <span>{placeholder}</span>}</span>
+          <span className="truncate">{date ? format(date, 'dd/MM/yyyy HH:mm') : placeholder}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -97,6 +116,9 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
             <Calendar
               mode="single"
               selected={date}
+              captionLayout="dropdown"
+              month={month}
+              onMonthChange={setMonth}
               onSelect={handleDateSelect}
               initialFocus
               disabled={(checkDate) => checkDate < new Date(new Date().setHours(0, 0, 0, 0))}

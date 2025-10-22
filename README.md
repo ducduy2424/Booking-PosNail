@@ -64,7 +64,7 @@ yarn install
 Tạo file `.env.local` trong thư mục root:
 ```env
 # API Configuration
-REACT_APP_API_URL=http://localhost:3001
+REACT_APP_API_URL=http://localhost:3000
 REACT_APP_NAME=Booking Frontend
 
 # Other configurations
