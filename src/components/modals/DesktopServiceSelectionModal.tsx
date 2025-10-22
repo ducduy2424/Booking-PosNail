@@ -3,14 +3,14 @@ import { Button } from 'components/ui/button'
 import { Input } from 'components/ui/input'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'components/ui/dialog'
 import { Search, Plus, Minus } from 'lucide-react'
-import { mockServiceCategories } from 'data/mockData'
-import type { Service } from 'store/slices/serviceSlice'
+import type { Service, ServiceCategory } from 'store/slices/serviceSlice'
 import { formatCurrency } from 'lib/utils'
 
 interface DesktopServiceSelectionModalProps {
   isOpen: boolean
   onClose: () => void
   services: Service[]
+  categories: ServiceCategory[]
   searchTerm: string
   setSearchTerm: (value: string) => void
   selectedCategory: string
@@ -18,6 +18,7 @@ interface DesktopServiceSelectionModalProps {
   selectedServices: { [key: string]: number }
   filteredServices: Service[]
   selectedCount: number
+  servicesLoading: boolean
   handleServiceToggle: (serviceId: string) => void
   handleQuantityChange: (serviceId: string, change: number) => void
   handleSave: () => void
@@ -26,12 +27,14 @@ interface DesktopServiceSelectionModalProps {
 export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModalProps> = ({
   isOpen,
   onClose,
+  categories,
   searchTerm,
   setSearchTerm,
   selectedCategory,
   setSelectedCategory,
   selectedServices,
   filteredServices,
+  servicesLoading,
   handleServiceToggle,
   handleQuantityChange,
   handleSave,
@@ -73,7 +76,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                 maxWidth: '100%',
               }}
             >
-              {mockServiceCategories.map((category) => (
+              {categories.map((category) => (
                 <Button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
@@ -83,7 +86,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                       : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
                   }`}
                 >
-                  <span className="mr-2 text-lg">{category.icon}</span>
+                  <span className="mr-2 text-lg">{category.icon || '💅'}</span>
                   {category.name}
                 </Button>
               ))}
@@ -92,10 +95,14 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
 
           {/* Services Grid */}
           <div className="flex-1 px-4 sm:px-6 overflow-y-auto pb-20 sm:pb-24">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 pb-4">
-              {filteredServices
-                .filter((service) => !selectedCategory || service.category === selectedCategory)
-                .map((service) => {
+            {servicesLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Loading services...</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 pb-4">
+                {filteredServices.map((service) => {
                   const quantity = selectedServices[service.id] || 0
                   const isSelected = quantity > 0
 
@@ -156,7 +163,8 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                     </div>
                   )
                 })}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

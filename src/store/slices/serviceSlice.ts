@@ -1,5 +1,7 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from '../index'
+import { serviceService } from '../../services/serviceService'
+import type { ServiceLv1ApiResponse, ServiceLv2ApiResponse } from '../../types'
 
 // Define types for service
 export interface Service {
@@ -18,9 +20,9 @@ export interface Service {
 export interface ServiceCategory {
   id: string
   name: string
-  description: string
+  description?: string
   icon?: string
-  isActive: boolean
+  isActive?: boolean
 }
 
 export interface ServiceFilter {
@@ -42,6 +44,8 @@ interface ServiceState {
   error: string | null
   filters: ServiceFilter
   totalCount: number
+  categoriesLoading: boolean
+  servicesLoading: boolean
 }
 
 // Define the initial state
@@ -53,7 +57,34 @@ const initialState: ServiceState = {
   error: null,
   filters: {},
   totalCount: 0,
+  categoriesLoading: false,
+  servicesLoading: false,
 }
+
+// Async thunks for API calls
+export const fetchServiceCategories = createAsyncThunk(
+  'service/fetchServiceCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await serviceService.getServicesLv1()
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch service categories')
+    }
+  }
+)
+
+export const fetchServicesByCategory = createAsyncThunk(
+  'service/fetchServicesByCategory',
+  async ({ lv1ServiceId, search }: { lv1ServiceId: string; search?: string }, { rejectWithValue }) => {
+    try {
+      const response = await serviceService.getServicesLv2(lv1ServiceId, search)
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch services')
+    }
+  }
+)
 
 export const serviceSlice = createSlice({
   name: 'service',
@@ -128,7 +159,59 @@ export const serviceSlice = createSlice({
       state.error = null
       state.filters = {}
       state.totalCount = 0
+      state.categoriesLoading = false
+      state.servicesLoading = false
     },
+  },
+  extraReducers: (builder) => {
+    // Handle fetchServiceCategories
+    builder
+      .addCase(fetchServiceCategories.pending, (state) => {
+        state.categoriesLoading = true
+        state.error = null
+      })
+      .addCase(fetchServiceCategories.fulfilled, (state, action) => {
+        state.categoriesLoading = false
+        // Transform API response to match UI expectations
+        state.categories = action.payload.map((item: ServiceLv1ApiResponse) => ({
+          id: item.id,
+          name: item.lv_1_service,
+          description: '',
+          icon: '💅', // Default icon, can be customized later
+          isActive: true,
+        }))
+      })
+      .addCase(fetchServiceCategories.rejected, (state, action) => {
+        state.categoriesLoading = false
+        state.error = action.payload as string
+      })
+
+    // Handle fetchServicesByCategory
+    builder
+      .addCase(fetchServicesByCategory.pending, (state) => {
+        state.servicesLoading = true
+        state.error = null
+      })
+      .addCase(fetchServicesByCategory.fulfilled, (state, action) => {
+        state.servicesLoading = false
+        // Transform API response to match UI expectations
+        state.services = action.payload.map((item: ServiceLv2ApiResponse) => ({
+          id: item.id,
+          name: item.lv_2_service,
+          description: '',
+          price: item.amount,
+          duration: 30, // Default duration, can be customized later
+          category: '', // Will be set by the component
+          image: '',
+          isActive: true,
+          createdAt: item.created_at,
+          updatedAt: item.created_at,
+        }))
+      })
+      .addCase(fetchServicesByCategory.rejected, (state, action) => {
+        state.servicesLoading = false
+        state.error = action.payload as string
+      })
   },
 })
 
@@ -155,5 +238,7 @@ export const selectServiceLoading = (state: RootState) => state.service?.loading
 export const selectServiceError = (state: RootState) => state.service?.error
 export const selectServiceFilters = (state: RootState) => state.service?.filters || {}
 export const selectServiceTotalCount = (state: RootState) => state.service?.totalCount || 0
+export const selectCategoriesLoading = (state: RootState) => state.service?.categoriesLoading || false
+export const selectServicesLoading = (state: RootState) => state.service?.servicesLoading || false
 
 export default serviceSlice.reducer

@@ -3,20 +3,21 @@ import { Button } from 'components/ui/button'
 import { Input } from 'components/ui/input'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'components/ui/dialog'
 import { Search, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react'
-import { mockServiceCategories } from 'data/mockData'
-import type { Service } from 'store/slices/serviceSlice'
+import type { Service, ServiceCategory } from 'store/slices/serviceSlice'
 import { formatCurrency } from 'lib/utils'
 
 interface MobileServiceSelectionModalProps {
   isOpen: boolean
   onClose: () => void
   services: Service[]
+  categories: ServiceCategory[]
   searchTerm: string
   setSearchTerm: (value: string) => void
   selectedServices: { [key: string]: number }
   expandedServiceGroups: { [key: string]: boolean }
   serviceGroups: { [key: string]: Service[] }
   selectedCount: number
+  servicesLoading: boolean
   handleServiceToggle: (serviceId: string) => void
   handleQuantityChange: (serviceId: string, change: number) => void
   toggleServiceGroup: (groupName: string) => void
@@ -26,12 +27,13 @@ interface MobileServiceSelectionModalProps {
 export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalProps> = ({
   isOpen,
   onClose,
+  categories,
   searchTerm,
   setSearchTerm,
   selectedServices,
   expandedServiceGroups,
   serviceGroups,
-  selectedCount,
+  servicesLoading,
   handleServiceToggle,
   handleQuantityChange,
   toggleServiceGroup,
@@ -67,104 +69,113 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
           <div className="px-6 py-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">List services</h3>
-              <span className="text-sm text-gray-600">(Selected: {selectedCount})</span>
+              <span className="text-sm text-gray-600">
+                (Selected: {Object.values(selectedServices).reduce((sum, qty) => sum + qty, 0)})
+              </span>
             </div>
           </div>
 
           {/* Services List */}
           <div className="flex-1 px-6 overflow-y-auto pb-20">
-            <div className="space-y-4 pb-4">
-              {Object.entries(serviceGroups).map(([groupName, groupServices]) => (
-                <div key={groupName} className="space-y-2">
-                  {/* Service Group Header */}
-                  <Button
-                    onClick={() => toggleServiceGroup(groupName)}
-                    className="w-full justify-between rounded-xl px-4 py-3 bg-blue-600 text-white border-blue-600"
-                  >
-                    <div className="flex items-center">
-                      <span className="mr-2 text-lg">
-                        {mockServiceCategories.find((cat) => cat.id === groupName)?.icon || '💅'}
-                      </span>
-                      {mockServiceCategories.find((cat) => cat.id === groupName)?.name || groupName}
-                    </div>
-                    {expandedServiceGroups[groupName] ? (
-                      <ChevronUp className="w-4 h-4" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4" />
-                    )}
-                  </Button>
+            {servicesLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Loading services...</span>
+              </div>
+            ) : (
+              <div className="space-y-4 pb-4">
+                {Object.entries(serviceGroups).map(([groupName, groupServices]) => (
+                  <div key={groupName} className="space-y-2">
+                    {/* Service Group Header */}
+                    <Button
+                      onClick={() => toggleServiceGroup(groupName)}
+                      className="w-full justify-between rounded-xl px-4 py-3 bg-blue-600 text-white border-blue-600"
+                    >
+                      <div className="flex items-center">
+                        <span className="mr-2 text-lg">
+                          {categories.find((cat) => cat.id === groupName)?.icon || '💅'}
+                        </span>
+                        {categories.find((cat) => cat.id === groupName)?.name || groupName}
+                      </div>
+                      {expandedServiceGroups[groupName] ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </Button>
 
-                  {/* Service Items */}
-                  {expandedServiceGroups[groupName] && (
-                    <div className="grid grid-cols-2 gap-3">
-                      {groupServices.map((service) => {
-                        const quantity = selectedServices[service.id] || 0
-                        const isSelected = quantity > 0
+                    {/* Service Items */}
+                    {expandedServiceGroups[groupName] && (
+                      <div className="grid grid-cols-2 gap-3">
+                        {groupServices.map((service) => {
+                          const quantity = selectedServices[service.id] || 0
+                          const isSelected = quantity > 0
 
-                        return (
-                          <div
-                            key={service.id}
-                            className={`rounded-lg border p-3 transition-all ${
-                              isSelected
-                                ? 'border-blue-600 bg-blue-600 text-white'
-                                : 'border-gray-200 bg-white hover:border-gray-300'
-                            }`}
-                          >
-                            <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                              <div className="flex-1 min-w-0">
-                                <h5
-                                  className={`text-xs font-normal truncate ${isSelected ? 'text-white' : 'text-gray-900'}`}
-                                >
-                                  {service.name}
-                                </h5>
-                                <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-blue-600'}`}>
-                                  {formatCurrency(service.price)}
-                                </p>
-                              </div>
+                          return (
+                            <div
+                              key={service.id}
+                              className={`rounded-lg border p-3 transition-all ${
+                                isSelected
+                                  ? 'border-blue-600 bg-blue-600 text-white'
+                                  : 'border-gray-200 bg-white hover:border-gray-300'
+                              }`}
+                            >
+                              <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                                <div className="flex-1 min-w-0">
+                                  <h5
+                                    className={`text-xs font-normal truncate ${isSelected ? 'text-white' : 'text-gray-900'}`}
+                                  >
+                                    {service.name}
+                                  </h5>
+                                  <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-blue-600'}`}>
+                                    {formatCurrency(service.price)}
+                                  </p>
+                                </div>
 
-                              <div className="mt-2 md:mt-0 md:ml-2 flex-shrink-0 md:self-auto self-end">
-                                {isSelected ? (
-                                  <div className="flex items-center bg-gray-800/30 rounded-lg px-2 py-1 border border-gray-600">
+                                <div className="mt-2 md:mt-0 md:ml-2 flex-shrink-0 md:self-auto self-end">
+                                  {isSelected ? (
+                                    <div className="flex items-center bg-gray-800/30 rounded-lg px-2 py-1 border border-gray-600">
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => handleQuantityChange(service.id, -1)}
+                                        className="w-5 h-5 p-0 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                                      >
+                                        <Minus className="w-3 h-3" />
+                                      </Button>
+                                      <span className="mx-2 text-xs font-bold text-white min-w-[16px] text-center">
+                                        {quantity}
+                                      </span>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => handleQuantityChange(service.id, 1)}
+                                        className="w-5 h-5 p-0 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  ) : (
                                     <Button
                                       size="sm"
-                                      variant="ghost"
-                                      onClick={() => handleQuantityChange(service.id, -1)}
-                                      className="w-5 h-5 p-0 rounded-full bg-red-500 hover:bg-red-600 text-white"
-                                    >
-                                      <Minus className="w-3 h-3" />
-                                    </Button>
-                                    <span className="mx-2 text-xs font-bold text-white min-w-[16px] text-center">
-                                      {quantity}
-                                    </span>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      onClick={() => handleQuantityChange(service.id, 1)}
-                                      className="w-5 h-5 p-0 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                                      onClick={() => handleServiceToggle(service.id)}
+                                      className="w-6 h-6 p-0 rounded-full text-white"
+                                      style={{ backgroundColor: '#1B365D' }}
                                     >
                                       <Plus className="w-3 h-3" />
                                     </Button>
-                                  </div>
-                                ) : (
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleServiceToggle(service.id)}
-                                    className="w-6 h-6 p-0 rounded-full text-white"
-                                    style={{ backgroundColor: '#1B365D' }}
-                                  >
-                                    <Plus className="w-3 h-3" />
-                                  </Button>
-                                )}
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

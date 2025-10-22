@@ -1,6 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+  BASE_URL: process.env.REACT_APP_API_URL,
+  STORE_ID: process.env.REACT_APP_STORE_ID || '1',
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000,

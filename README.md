@@ -48,6 +48,23 @@
 - npm 8.0.0+ hoặc yarn 1.22.0+
 - Git
 
+## 🔧 Environment Variables
+
+Tạo file `.env.local` trong thư mục gốc với các biến môi trường sau:
+
+```bash
+# API Configuration
+REACT_APP_API_URL=https://api-posnail.citgroup.vn/api
+REACT_APP_STORE_ID=1
+
+# Development Configuration
+REACT_APP_NODE_ENV=development
+```
+
+### Biến môi trường bắt buộc:
+- `REACT_APP_API_URL`: URL của API backend
+- `REACT_APP_STORE_ID`: ID của cửa hàng (mặc định là 1)
+
 ## 🛠 Cài đặt và Setup
 
 ### 1. Clone repository
@@ -75,6 +92,7 @@ Tạo file `.env.local` trong thư mục root:
 ```env
 # API Configuration
 REACT_APP_API_URL=http://localhost:3000
+STORE_ID=1
 REACT_APP_NAME=Booking Frontend
 
 # Other configurations
