@@ -67,7 +67,7 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
   }, [services, selectedCategory])
 
   const filteredServices = servicesWithCategory.filter((service) => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = service.lv_2_service.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesSearch
   })
 

@@ -86,8 +86,8 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                       : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
                   }`}
                 >
-                  <span className="mr-2 text-lg">{category.icon || '💅'}</span>
-                  {category.name}
+                  <span className="mr-2 text-lg">💅</span>
+                  {category.lv_1_service}
                 </Button>
               ))}
             </div>
@@ -118,10 +118,10 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                       <div className="flex justify-between items-center">
                         <div className="flex-1">
                           <h4 className={`font-medium mb-1 text-sm ${isSelected ? 'text-white' : 'text-gray-900'}`}>
-                            {service.name}
+                            {service.lv_2_service}
                           </h4>
                           <p className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-blue-600'}`}>
-                            {formatCurrency(service.price)}
+                            {formatCurrency(service.amount)}
                           </p>
                         </div>
 

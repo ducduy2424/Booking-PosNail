@@ -195,7 +195,8 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         onClose={() => setIsSuccessModalOpen(false)}
         bookingDetails={{
           appointmentTime: formatAppointmentTime(appointmentTime),
-          service: selectedServices.length > 0 ? selectedServices.map((s) => s.name).join(', ') : 'Selected Service',
+          service:
+            selectedServices.length > 0 ? selectedServices.map((s) => s.lv_2_service).join(', ') : 'Selected Service',
           technician: selectedTechnician?.name || 'Selected Technician',
         }}
       />

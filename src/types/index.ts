@@ -33,5 +33,3 @@ export interface ServiceLv2ApiResponse {
   amount: number
   created_at: string
 }
-
-// Add more types as needed

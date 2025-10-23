@@ -6,31 +6,20 @@ import type { ServiceLv1ApiResponse, ServiceLv2ApiResponse } from '../../types'
 // Define types for service
 export interface Service {
   id: string
-  name: string
-  description: string
-  price: number
-  duration: number // in minutes
-  category: string
-  image?: string
-  isActive: boolean
-  createdAt: string
-  updatedAt: string
+  lv_2_service: string
+  amount: number
+  created_at: string
 }
 
 export interface ServiceCategory {
   id: string
-  name: string
-  description?: string
-  icon?: string
-  isActive?: boolean
+  lv_1_service: string
+  created_at: string
 }
 
 export interface ServiceFilter {
   search?: string
   category?: string
-  minPrice?: number
-  maxPrice?: number
-  isActive?: boolean
   limit?: number
   page?: number
 }
@@ -172,14 +161,8 @@ export const serviceSlice = createSlice({
       })
       .addCase(fetchServiceCategories.fulfilled, (state, action) => {
         state.categoriesLoading = false
-        // Transform API response to match UI expectations
-        state.categories = action.payload.map((item: ServiceLv1ApiResponse) => ({
-          id: item.id,
-          name: item.lv_1_service,
-          description: '',
-          icon: '💅', // Default icon, can be customized later
-          isActive: true,
-        }))
+        // Store API response directly
+        state.categories = action.payload
       })
       .addCase(fetchServiceCategories.rejected, (state, action) => {
         state.categoriesLoading = false
@@ -194,19 +177,8 @@ export const serviceSlice = createSlice({
       })
       .addCase(fetchServicesByCategory.fulfilled, (state, action) => {
         state.servicesLoading = false
-        // Transform API response to match UI expectations
-        state.services = action.payload.map((item: ServiceLv2ApiResponse) => ({
-          id: item.id,
-          name: item.lv_2_service,
-          description: '',
-          price: item.amount,
-          duration: 30, // Default duration, can be customized later
-          category: '', // Will be set by the component
-          image: '',
-          isActive: true,
-          createdAt: item.created_at,
-          updatedAt: item.created_at,
-        }))
+        // Store API response directly
+        state.services = action.payload
       })
       .addCase(fetchServicesByCategory.rejected, (state, action) => {
         state.servicesLoading = false

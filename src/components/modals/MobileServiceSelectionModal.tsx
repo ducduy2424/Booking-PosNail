@@ -92,10 +92,8 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                       className="w-full justify-between rounded-xl px-4 py-3 bg-blue-600 text-white border-blue-600"
                     >
                       <div className="flex items-center">
-                        <span className="mr-2 text-lg">
-                          {categories.find((cat) => cat.id === groupName)?.icon || '💅'}
-                        </span>
-                        {categories.find((cat) => cat.id === groupName)?.name || groupName}
+                        <span className="mr-2 text-lg">💅</span>
+                        {categories.find((cat) => cat.id === groupName)?.lv_1_service || groupName}
                       </div>
                       {expandedServiceGroups[groupName] ? (
                         <ChevronUp className="w-4 h-4" />
@@ -125,10 +123,10 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                                   <h5
                                     className={`text-xs font-normal truncate ${isSelected ? 'text-white' : 'text-gray-900'}`}
                                   >
-                                    {service.name}
+                                    {service.lv_2_service}
                                   </h5>
                                   <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-blue-600'}`}>
-                                    {formatCurrency(service.price)}
+                                    {formatCurrency(service.amount)}
                                   </p>
                                 </div>
 
