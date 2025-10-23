@@ -127,7 +127,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
 
                         <div className="ml-3 flex-shrink-0">
                           {isSelected ? (
-                            <div className="flex items-center bg-gray-800/30 rounded-lg px-3 py-2 border border-gray-600">
+                            <div className="flex items-center bg-gray-800/30 rounded-lg border border-gray-600">
                               <Button
                                 size="sm"
                                 variant="ghost"
