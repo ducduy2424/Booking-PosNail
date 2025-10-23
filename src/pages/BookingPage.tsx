@@ -9,8 +9,14 @@ import backgroundImage from 'assets/images/background/background.avif'
 import type { Service } from 'store/slices/serviceSlice'
 import type { Technician } from 'store/slices/technicianSlice'
 import { bookingService } from 'services/bookingService'
-import type { CreateTicketRequest } from 'services/bookingService'
+import type { CreateTicketRequest, ServiceBooking, StaffService } from 'services/bookingService'
 import { API_CONFIG } from 'config/api'
+
+interface AppointmentSlot {
+  id: string
+  selectedServices: Service[]
+  selectedTechnician: Technician | null
+}
 
 interface BookingPageProps {
   className?: string
@@ -23,13 +29,22 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
   const [isServiceModalOpen, setIsServiceModalOpen] = React.useState(false)
   const [isTechnicianModalOpen, setIsTechnicianModalOpen] = React.useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false)
-  const [selectedServices, setSelectedServices] = React.useState<Service[]>([])
-  const [selectedTechnician, setSelectedTechnician] = React.useState<Technician | null>(null)
+  const [currentSlotId, setCurrentSlotId] = React.useState<string | null>(null)
   const [appointmentTime, setAppointmentTime] = React.useState<Date | null>(null)
 
-  // Extract service IDs for technician filtering
-  const serviceIds = selectedServices.map((service) => service.id)
-  const hasServicesSelected = selectedServices.length > 0
+  // State for appointment slots
+  const [appointmentSlots, setAppointmentSlots] = React.useState<AppointmentSlot[]>([
+    {
+      id: '1',
+      selectedServices: [],
+      selectedTechnician: null,
+    },
+  ])
+
+  // Extract service IDs for technician filtering from current slot
+  const currentSlot = appointmentSlots.find((slot) => slot.id === currentSlotId)
+  const serviceIds = currentSlot?.selectedServices.map((service) => service.id) || []
+  const hasServicesSelected = (currentSlot?.selectedServices.length || 0) > 0
 
   // Helper function to format appointment time
   const formatAppointmentTime = (date: Date | null): string => {
@@ -53,24 +68,49 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
     return `${time}, ${dateStr}`
   }
 
-  const handleServiceSelect = () => {
+  const handleServiceSelect = (slotId: string) => {
+    setCurrentSlotId(slotId)
     setIsServiceModalOpen(true)
   }
 
-  const handleTechnicianSelect = () => {
+  const handleTechnicianSelect = (slotId: string) => {
+    setCurrentSlotId(slotId)
     if (hasServicesSelected) {
       setIsTechnicianModalOpen(true)
     }
   }
 
   const handleServiceSave = (services: Service[]) => {
-    setSelectedServices(services)
+    if (currentSlotId) {
+      setAppointmentSlots((prev) =>
+        prev.map((slot) => (slot.id === currentSlotId ? { ...slot, selectedServices: services } : slot))
+      )
+    }
     setIsServiceModalOpen(false)
+    setCurrentSlotId(null)
   }
 
   const handleTechnicianSave = (technician: Technician) => {
-    setSelectedTechnician(technician)
+    if (currentSlotId) {
+      setAppointmentSlots((prev) =>
+        prev.map((slot) => (slot.id === currentSlotId ? { ...slot, selectedTechnician: technician } : slot))
+      )
+    }
     setIsTechnicianModalOpen(false)
+    setCurrentSlotId(null)
+  }
+
+  const handleAddSlot = () => {
+    const newSlot: AppointmentSlot = {
+      id: Date.now().toString(),
+      selectedServices: [],
+      selectedTechnician: null,
+    }
+    setAppointmentSlots((prev) => [...prev, newSlot])
+  }
+
+  const handleRemoveSlot = (slotId: string) => {
+    setAppointmentSlots((prev) => prev.filter((slot) => slot.id !== slotId))
   }
 
   const handleBookingSubmit = async (data: any) => {
@@ -106,6 +146,38 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
 
       const { area_code, phone_number } = parsePhoneNumber(data.phone)
 
+      // Group slots by technician
+      const staffServicesMap = new Map<string, ServiceBooking[]>()
+
+      appointmentSlots.forEach((slot) => {
+        if (slot.selectedTechnician && slot.selectedServices.length > 0) {
+          const staffId = slot.selectedTechnician.id
+
+          if (!staffServicesMap.has(staffId)) {
+            staffServicesMap.set(staffId, [])
+          }
+
+          // Add services for this technician
+          slot.selectedServices.forEach((service) => {
+            const existingService = staffServicesMap.get(staffId)!.find((s) => s.service_id === service.id)
+            if (existingService) {
+              existingService.quantity += 1 // Default quantity, can be enhanced later
+            } else {
+              staffServicesMap.get(staffId)!.push({
+                service_id: service.id,
+                quantity: 1, // Default quantity, can be enhanced later
+              })
+            }
+          })
+        }
+      })
+
+      // Convert to API format
+      const staff_services: StaffService[] = Array.from(staffServicesMap.entries()).map(([staff_id, services]) => ({
+        staff_id,
+        services,
+      }))
+
       // Transform form data to API format
       const ticketData: CreateTicketRequest = {
         store_id: parseInt(API_CONFIG.STORE_ID),
@@ -115,17 +187,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         phone_number: phone_number,
         email: data.email || '',
         appointment_at: data.appointmentTime ? data.appointmentTime.toISOString().slice(0, 19).replace('T', ' ') : '',
-        staff_services: selectedTechnician
-          ? [
-              {
-                staff_id: selectedTechnician.id,
-                services: selectedServices.map((service) => ({
-                  service_id: service.id,
-                  quantity: 1, // Default quantity, can be enhanced later
-                })),
-              },
-            ]
-          : [],
+        staff_services,
       }
 
       // Call API to create ticket
@@ -170,9 +232,12 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
           onServiceSelect={handleServiceSelect}
           onTechnicianSelect={handleTechnicianSelect}
           onSubmit={handleBookingSubmit}
-          selectedServices={selectedServices}
-          hasServicesSelected={hasServicesSelected}
-          selectedTechnician={selectedTechnician}
+          appointmentSlots={appointmentSlots}
+          onUpdateSlot={(slotId, updates) => {
+            setAppointmentSlots((prev) => prev.map((slot) => (slot.id === slotId ? { ...slot, ...updates } : slot)))
+          }}
+          onAddSlot={handleAddSlot}
+          onRemoveSlot={handleRemoveSlot}
         />
       </div>
 
@@ -195,9 +260,14 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         onClose={() => setIsSuccessModalOpen(false)}
         bookingDetails={{
           appointmentTime: formatAppointmentTime(appointmentTime),
-          service:
-            selectedServices.length > 0 ? selectedServices.map((s) => s.lv_2_service).join(', ') : 'Selected Service',
-          technician: selectedTechnician?.name || 'Selected Technician',
+          service: appointmentSlots
+            .filter((slot) => slot.selectedServices.length > 0)
+            .map((slot) => slot.selectedServices.map((s) => s.lv_2_service).join(', '))
+            .join(' | '),
+          technician: appointmentSlots
+            .filter((slot) => slot.selectedTechnician)
+            .map((slot) => slot.selectedTechnician!.name)
+            .join(', '),
         }}
       />
     </div>

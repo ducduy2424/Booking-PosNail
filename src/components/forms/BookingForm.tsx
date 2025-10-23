@@ -11,18 +11,19 @@ import type { Technician } from 'store/slices/technicianSlice'
 
 interface AppointmentSlot {
   id: string
-  service: string
-  technician: string
+  selectedServices: Service[]
+  selectedTechnician: Technician | null
 }
 
 interface BookingFormProps {
-  onServiceSelect?: () => void
-  onTechnicianSelect?: () => void
+  onServiceSelect?: (slotId: string) => void
+  onTechnicianSelect?: (slotId: string) => void
   onSubmit?: (data: any) => void
   className?: string
-  selectedServices?: Service[]
-  hasServicesSelected?: boolean
-  selectedTechnician?: Technician | null
+  appointmentSlots?: AppointmentSlot[]
+  onUpdateSlot?: (slotId: string, updates: Partial<AppointmentSlot>) => void
+  onAddSlot?: () => void
+  onRemoveSlot?: (slotId: string) => void
 }
 
 export const BookingForm: React.FC<BookingFormProps> = ({
@@ -30,9 +31,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   onTechnicianSelect,
   onSubmit,
   className = '',
-  selectedServices = [],
-  hasServicesSelected = false,
-  selectedTechnician = null,
+  appointmentSlots: externalAppointmentSlots,
+  onUpdateSlot,
+  onAddSlot,
+  onRemoveSlot,
 }) => {
   const { t } = useTranslation()
   const [formData, setFormData] = React.useState({
@@ -44,34 +46,46 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
   const [appointmentTime, setAppointmentTime] = React.useState<Date | undefined>(undefined)
 
-  const [appointmentSlots, setAppointmentSlots] = React.useState<AppointmentSlot[]>([
+  // Use external appointment slots if provided, otherwise use internal state
+  const [internalAppointmentSlots, setInternalAppointmentSlots] = React.useState<AppointmentSlot[]>([
     {
       id: '1',
-      service: '',
-      technician: '',
+      selectedServices: [],
+      selectedTechnician: null,
     },
   ])
+
+  const appointmentSlots = externalAppointmentSlots || internalAppointmentSlots
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSlotChange = (slotId: string, field: string, value: string | Date) => {
-    setAppointmentSlots((prev) => prev.map((slot) => (slot.id === slotId ? { ...slot, [field]: value } : slot)))
-  }
-
   const addSlot = () => {
-    const newSlot: AppointmentSlot = {
-      id: Date.now().toString(),
-      service: '',
-      technician: '',
+    console.log('test add slot')
+    if (onAddSlot) {
+      onAddSlot()
+    } else {
+      // Fallback to internal state if no callback provided
+      setInternalAppointmentSlots((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          selectedServices: [],
+          selectedTechnician: null,
+        },
+      ])
     }
-    setAppointmentSlots((prev) => [...prev, newSlot])
   }
 
   const removeSlot = (slotId: string) => {
     if (appointmentSlots.length > 1) {
-      setAppointmentSlots((prev) => prev.filter((slot) => slot.id !== slotId))
+      if (onRemoveSlot) {
+        onRemoveSlot(slotId)
+      } else {
+        // Fallback to internal state if no callback provided
+        setInternalAppointmentSlots((prev) => prev.filter((slot) => slot.id !== slotId))
+      }
     }
   }
 
@@ -179,13 +193,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                     <div className="relative">
                       <Input
                         placeholder={
-                          selectedServices.length > 0
-                            ? `${selectedServices.length} service(s) selected`
+                          slot.selectedServices.length > 0
+                            ? `${slot.selectedServices.length} service(s) selected`
                             : t('booking.selectService')
                         }
-                        value={selectedServices.map((s) => s.lv_2_service).join(', ')}
+                        value={slot.selectedServices.map((s) => s.lv_2_service).join(', ')}
                         readOnly
-                        onClick={onServiceSelect}
+                        onClick={() => onServiceSelect?.(slot.id)}
                         className="bg-white cursor-pointer"
                       />
                       <svg
@@ -204,17 +218,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       {t('booking.selectTechnician')} <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
-                      {selectedTechnician ? (
+                      {slot.selectedTechnician ? (
                         // Show selected technician with avatar and name
                         <div
-                          onClick={hasServicesSelected ? onTechnicianSelect : undefined}
-                          className={`flex items-center gap-3 p-3 border rounded-lg bg-white ${
-                            hasServicesSelected ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-50'
-                          }`}
+                          onClick={() => onTechnicianSelect?.(slot.id)}
+                          className="flex items-center gap-3 p-3 border rounded-lg bg-white cursor-pointer hover:bg-gray-50"
                         >
                           <img
-                            src={selectedTechnician.avatar}
-                            alt={selectedTechnician.name}
+                            src={slot.selectedTechnician.avatar}
+                            alt={slot.selectedTechnician.name}
                             className="w-8 h-8 rounded-full object-cover"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement
@@ -225,11 +237,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                           />
                           <div className="w-8 h-8 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full items-center justify-center hidden">
                             <span className="text-sm font-semibold text-gray-700">
-                              {selectedTechnician.name.charAt(0)}
+                              {slot.selectedTechnician.name.charAt(0)}
                             </span>
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">{selectedTechnician.name}</p>
+                            <p className="text-sm font-medium text-gray-900">{slot.selectedTechnician.name}</p>
                             <p className="text-xs text-gray-500">Selected technician</p>
                           </div>
                           <User className="w-4 h-4 text-gray-400" />
@@ -237,21 +249,14 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       ) : (
                         // Show placeholder input
                         <Input
-                          placeholder={
-                            hasServicesSelected ? t('booking.selectTechnician') : 'Please select services first'
-                          }
+                          placeholder={t('booking.selectTechnician')}
                           value=""
                           readOnly
-                          onClick={hasServicesSelected ? onTechnicianSelect : undefined}
-                          className={`bg-white ${hasServicesSelected ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
-                          disabled={!hasServicesSelected}
+                          onClick={() => onTechnicianSelect?.(slot.id)}
+                          className="bg-white cursor-pointer"
                         />
                       )}
-                      {!selectedTechnician && (
-                        <User
-                          className={`absolute right-3 top-3 w-4 h-4 ${hasServicesSelected ? 'text-gray-400' : 'text-gray-300'}`}
-                        />
-                      )}
+                      {!slot.selectedTechnician && <User className="absolute right-3 top-3 w-4 h-4 text-gray-400" />}
                     </div>
                   </div>
 
