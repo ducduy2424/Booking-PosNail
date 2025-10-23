@@ -18,9 +18,10 @@ interface ServiceSelectionModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (selectedServices: Service[]) => void
+  slotId?: string // Thêm slotId để phân biệt slot
 }
 
-export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ isOpen, onClose, onSave }) => {
+export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ isOpen, onClose, onSave, slotId }) => {
   const dispatch = useAppDispatch()
   const isMobile = useMobile()
 
@@ -34,9 +35,15 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
   // Shared state - preserved when switching between mobile/desktop
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedCategory, setSelectedCategory] = React.useState('')
-  const [selectedServices, setSelectedServices] = React.useState<{ [key: string]: number }>({})
-  const [expandedServiceGroups, setExpandedServiceGroups] = React.useState<{ [key: string]: boolean }>({})
-  const [allServicesByCategory, setAllServicesByCategory] = React.useState<{ [key: string]: Service[] }>({})
+  const [selectedServices, setSelectedServices] = React.useState<{ [slotId: string]: { [serviceId: string]: number } }>(
+    {}
+  )
+  const [expandedServiceGroups, setExpandedServiceGroups] = React.useState<{
+    [slotId: string]: { [groupName: string]: boolean }
+  }>({})
+  const [allServicesByCategory, setAllServicesByCategory] = React.useState<{
+    [slotId: string]: { [categoryId: string]: Service[] }
+  }>({})
   const [categoryLoadingStates, setCategoryLoadingStates] = React.useState<{ [key: string]: boolean }>({})
 
   // Fetch categories on mount
@@ -60,26 +67,31 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
     }
   }, [selectedCategory, searchTerm, dispatch])
 
-  // Store services in local state when fetched
+  // Store services in local state when fetched (for desktop)
   React.useEffect(() => {
-    if (services.length > 0 && selectedCategory) {
+    if (services.length > 0 && selectedCategory && !isMobile) {
+      // Only store for desktop mode, mobile uses fetchServicesForCategory
       setAllServicesByCategory((prev) => ({
         ...prev,
-        [selectedCategory]: services,
+        [slotId || 'default']: {
+          ...prev[slotId || 'default'],
+          [selectedCategory]: services,
+        },
       }))
     }
-  }, [services, selectedCategory])
+  }, [services, selectedCategory, isMobile, slotId])
 
   // Update services with category information
   const servicesWithCategory = React.useMemo(() => {
     if (isMobile) {
-      // For mobile: combine all services from all categories
-      const allServices = Object.values(allServicesByCategory).flat()
+      // For mobile: combine all services from all categories for current slot
+      const slotServices = allServicesByCategory[slotId || ''] || {}
+      const allServices = Object.values(slotServices).flat()
       return allServices.map((service) => ({
         ...service,
-        category: Object.keys(allServicesByCategory).find(categoryId => 
-          allServicesByCategory[categoryId].some(s => s.id === service.id)
-        ) || 'Other',
+        category:
+          Object.keys(slotServices).find((categoryId) => slotServices[categoryId].some((s) => s.id === service.id)) ||
+          'Other',
       }))
     } else {
       // For desktop: use services from Redux
@@ -88,7 +100,7 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
         category: selectedCategory,
       }))
     }
-  }, [services, selectedCategory, isMobile, allServicesByCategory])
+  }, [services, selectedCategory, isMobile, allServicesByCategory, slotId])
 
   const filteredServices = servicesWithCategory.filter((service) => {
     const matchesSearch = service.lv_2_service.toLowerCase().includes(searchTerm.toLowerCase())
@@ -101,7 +113,7 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
       // For mobile: show ALL categories, not just ones with loaded services
       const groups: { [key: string]: Service[] } = {}
       categories.forEach((category) => {
-        const categoryServices = allServicesByCategory[category.id] || []
+        const categoryServices = allServicesByCategory[slotId || '']?.[category.id] || []
         const filteredCategoryServices = categoryServices.filter((service) => {
           const matchesSearch = service.lv_2_service.toLowerCase().includes(searchTerm.toLowerCase())
           return matchesSearch
@@ -123,42 +135,77 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
         {} as { [key: string]: typeof servicesWithCategory }
       )
     }
-  }, [isMobile, categories, allServicesByCategory, filteredServices, searchTerm])
+  }, [isMobile, categories, allServicesByCategory, filteredServices, searchTerm, slotId])
 
   const handleServiceToggle = (serviceId: string) => {
-    setSelectedServices((prev) => ({
-      ...prev,
-      [serviceId]: prev[serviceId] ? 0 : 1,
-    }))
+    if (!slotId) return
+
+    setSelectedServices((prev) => {
+      const slotServices = prev[slotId] || {}
+      const currentQuantity = slotServices[serviceId] || 0
+      const newQuantity = currentQuantity > 0 ? 0 : 1
+
+      return {
+        ...prev,
+        [slotId]: {
+          ...slotServices,
+          [serviceId]: newQuantity,
+        },
+      }
+    })
   }
 
   const handleQuantityChange = (serviceId: string, change: number) => {
-    setSelectedServices((prev) => ({
-      ...prev,
-      [serviceId]: Math.max(0, (prev[serviceId] || 0) + change),
-    }))
+    if (!slotId) return
+
+    setSelectedServices((prev) => {
+      const slotServices = prev[slotId] || {}
+      const currentQuantity = slotServices[serviceId] || 0
+      const newQuantity = Math.max(0, currentQuantity + change)
+
+      return {
+        ...prev,
+        [slotId]: {
+          ...slotServices,
+          [serviceId]: newQuantity,
+        },
+      }
+    })
   }
 
   const toggleServiceGroup = (groupName: string) => {
-    setExpandedServiceGroups((prev) => ({
-      ...prev,
-      [groupName]: !prev[groupName],
-    }))
-    
-    // For mobile: fetch services when expanding if not already loaded
-    if (isMobile && !expandedServiceGroups[groupName] && !allServicesByCategory[groupName]) {
+    if (!slotId) return
+
+    setExpandedServiceGroups((prev) => {
+      const slotGroups = prev[slotId] || {}
+      return {
+        ...prev,
+        [slotId]: {
+          ...slotGroups,
+          [groupName]: !slotGroups[groupName],
+        },
+      }
+    })
+
+    // Fetch services if not already loaded for this slot
+    if (isMobile && !expandedServiceGroups[slotId]?.[groupName] && !allServicesByCategory[slotId]?.[groupName]) {
       fetchServicesForCategory(groupName)
     }
   }
 
   const fetchServicesForCategory = async (categoryId: string) => {
+    if (!slotId) return
+
     try {
       setCategoryLoadingStates((prev) => ({ ...prev, [categoryId]: true }))
       const response = await dispatch(fetchServicesByCategory({ lv1ServiceId: categoryId, search: searchTerm }))
       if (response.payload) {
         setAllServicesByCategory((prev) => ({
           ...prev,
-          [categoryId]: response.payload as Service[],
+          [slotId]: {
+            ...prev[slotId],
+            [categoryId]: response.payload as Service[],
+          },
         }))
       }
     } catch (error) {
@@ -169,7 +216,10 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
   }
 
   const handleSave = () => {
-    const servicesToSave = Object.entries(selectedServices)
+    if (!slotId) return
+
+    const slotServices = selectedServices[slotId] || {}
+    const servicesToSave = Object.entries(slotServices)
       .filter(([_, quantity]) => quantity > 0)
       .map(([serviceId, quantity]) => {
         const service = servicesWithCategory.find((s) => s.id === serviceId)
@@ -181,7 +231,7 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
     onClose()
   }
 
-  const selectedCount = Object.values(selectedServices).reduce((sum, qty) => sum + qty, 0)
+  const selectedCount = slotId ? Object.values(selectedServices[slotId] || {}).reduce((sum, qty) => sum + qty, 0) : 0
 
   // Show loading state
   if (categoriesLoading) {
@@ -225,8 +275,8 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
     setSearchTerm,
     selectedCategory,
     setSelectedCategory,
-    selectedServices,
-    expandedServiceGroups,
+    selectedServices: slotId ? selectedServices[slotId] || {} : {},
+    expandedServiceGroups: slotId ? expandedServiceGroups[slotId] || {} : {},
     filteredServices,
     serviceGroups,
     selectedCount,

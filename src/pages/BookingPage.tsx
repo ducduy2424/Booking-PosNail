@@ -116,25 +116,71 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
   // Chuẩn hóa dữ liệu
   const handleBookingSubmit = async (data: any) => {
     try {
-      // Helper function to parse phone number
+      // Validation: Check if appointment time is selected
+      if (!data.appointmentTime) {
+        alert('Vui lòng chọn thời gian hẹn!')
+        return
+      }
+
+      // Validation: Check required personal information fields
+      if (!data.fullName || !data.lastName || !data.phone) {
+        alert('Vui lòng điền đầy đủ thông tin cá nhân!')
+        return
+      }
+
+      // Validation: Check phone number format (US phone number validation only)
+      const phoneRegex = /^(\+1|1)[2-9][0-9]{2}[2-9][0-9]{6}$/
+      const cleanPhone = data.phone.replace(/[\s\-\(\)]/g, '') // Remove spaces, dashes, parentheses
+
+      if (!phoneRegex.test(cleanPhone)) {
+        alert('Số điện thoại không hợp lệ! Vui lòng nhập số điện thoại Mỹ (+1xxxxxxxxxx)')
+        return
+      }
+
+      // Additional validation: Check if phone number has correct length
+      let phoneWithoutCountryCode = cleanPhone
+      let isValidLength = false
+
+      if (cleanPhone.startsWith('+1') || cleanPhone.startsWith('1')) {
+        // US phone number
+        phoneWithoutCountryCode = cleanPhone.replace(/^(\+1|1)/, '')
+        isValidLength = phoneWithoutCountryCode.length === 10
+      }
+
+      if (!isValidLength) {
+        alert('Số điện thoại Mỹ phải có 10 chữ số!')
+        return
+      }
+
+      // Validation: Check email format if provided
+      if (data.email && data.email.trim() !== '') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(data.email)) {
+          alert('Email không hợp lệ!')
+          return
+        }
+      }
+
+      // Validation: Check if at least one slot has services and technician
+      const validSlots = appointmentSlots.filter((slot) => slot.selectedTechnician && slot.selectedServices.length > 0)
+
+      if (validSlots.length === 0) {
+        alert('Vui lòng chọn ít nhất một dịch vụ và kỹ thuật viên!')
+        return
+      }
+
+      // Helper function to parse US phone number
       const parsePhoneNumber = (phone: string) => {
         // Remove all non-digit characters
         const digits = phone.replace(/\D/g, '')
 
-        // Vietnamese phone number patterns
-        if (digits.startsWith('84')) {
-          // +84 format: remove country code
-          const withoutCountryCode = digits.substring(2)
+        // US phone number patterns
+        if (digits.startsWith('1') && digits.length === 11) {
+          // US phone number: +1 format
+          const withoutCountryCode = digits.substring(1)
           return {
             area_code: withoutCountryCode.substring(0, 3),
             phone_number: withoutCountryCode.substring(3),
-          }
-        } else if (digits.startsWith('0')) {
-          // 0xx format: remove leading 0
-          const withoutLeadingZero = digits.substring(1)
-          return {
-            area_code: withoutLeadingZero.substring(0, 3),
-            phone_number: withoutLeadingZero.substring(3),
           }
         } else {
           // Assume first 3 digits are area code
@@ -145,32 +191,30 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         }
       }
 
-      const { area_code, phone_number } = parsePhoneNumber(data.phone)
+      const { area_code, phone_number } = parsePhoneNumber(cleanPhone)
 
       // Group slots by technician
       const staffServicesMap = new Map<string, ServiceBooking[]>()
 
-      appointmentSlots.forEach((slot) => {
-        if (slot.selectedTechnician && slot.selectedServices.length > 0) {
-          const staffId = slot.selectedTechnician.id
+      validSlots.forEach((slot) => {
+        const staffId = slot.selectedTechnician!.id
 
-          if (!staffServicesMap.has(staffId)) {
-            staffServicesMap.set(staffId, [])
-          }
-
-          // Add services for this technician
-          slot.selectedServices.forEach((service) => {
-            const existingService = staffServicesMap.get(staffId)!.find((s) => s.service_id === service.id)
-            if (existingService) {
-              existingService.quantity += 1 // Default quantity, can be enhanced later
-            } else {
-              staffServicesMap.get(staffId)!.push({
-                service_id: service.id,
-                quantity: 1, // Default quantity, can be enhanced later
-              })
-            }
-          })
+        if (!staffServicesMap.has(staffId)) {
+          staffServicesMap.set(staffId, [])
         }
+
+        // Add services for this technician
+        slot.selectedServices.forEach((service) => {
+          const existingService = staffServicesMap.get(staffId)!.find((s) => s.service_id === service.id)
+          if (existingService) {
+            existingService.quantity += 1 // Default quantity, can be enhanced later
+          } else {
+            staffServicesMap.get(staffId)!.push({
+              service_id: service.id,
+              quantity: 1, // Default quantity, can be enhanced later
+            })
+          }
+        })
       })
 
       // Convert to API format
@@ -178,6 +222,12 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         staff_id,
         services,
       }))
+
+      // Final validation: Ensure we have at least one staff service
+      if (staff_services.length === 0) {
+        alert('Có lỗi xảy ra khi xử lý dữ liệu dịch vụ. Vui lòng thử lại!')
+        return
+      }
 
       // Transform form data to API format
       const ticketData: CreateTicketRequest = {
@@ -247,6 +297,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         isOpen={isServiceModalOpen}
         onClose={() => setIsServiceModalOpen(false)}
         onSave={handleServiceSave}
+        slotId={currentSlotId || undefined}
       />
 
       <TechnicianSelectionModal
