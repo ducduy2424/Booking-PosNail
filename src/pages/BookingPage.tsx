@@ -113,6 +113,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
     setAppointmentSlots((prev) => prev.filter((slot) => slot.id !== slotId))
   }
 
+  // Chuẩn hóa dữ liệu
   const handleBookingSubmit = async (data: any) => {
     try {
       // Helper function to parse phone number

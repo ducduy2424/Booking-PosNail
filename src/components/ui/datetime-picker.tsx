@@ -51,7 +51,6 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     if (selectedDate) {
       // Create a new date object to avoid mutation issues
       const newDate = new Date(selectedDate)
-
       // If there's already a time set, preserve it
       if (date) {
         newDate.setHours(date.getHours())

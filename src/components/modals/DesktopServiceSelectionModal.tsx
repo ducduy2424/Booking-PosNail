@@ -19,6 +19,7 @@ interface DesktopServiceSelectionModalProps {
   filteredServices: Service[]
   selectedCount: number
   servicesLoading: boolean
+  categoryLoadingStates: { [key: string]: boolean }
   handleServiceToggle: (serviceId: string) => void
   handleQuantityChange: (serviceId: string, change: number) => void
   handleSave: () => void
@@ -35,6 +36,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
   selectedServices,
   filteredServices,
   servicesLoading,
+  categoryLoadingStates, // Not used in desktop but required for interface compatibility
   handleServiceToggle,
   handleQuantityChange,
   handleSave,

@@ -36,6 +36,8 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
   const [selectedCategory, setSelectedCategory] = React.useState('')
   const [selectedServices, setSelectedServices] = React.useState<{ [key: string]: number }>({})
   const [expandedServiceGroups, setExpandedServiceGroups] = React.useState<{ [key: string]: boolean }>({})
+  const [allServicesByCategory, setAllServicesByCategory] = React.useState<{ [key: string]: Service[] }>({})
+  const [categoryLoadingStates, setCategoryLoadingStates] = React.useState<{ [key: string]: boolean }>({})
 
   // Fetch categories on mount
   React.useEffect(() => {
@@ -58,13 +60,35 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
     }
   }, [selectedCategory, searchTerm, dispatch])
 
+  // Store services in local state when fetched
+  React.useEffect(() => {
+    if (services.length > 0 && selectedCategory) {
+      setAllServicesByCategory((prev) => ({
+        ...prev,
+        [selectedCategory]: services,
+      }))
+    }
+  }, [services, selectedCategory])
+
   // Update services with category information
   const servicesWithCategory = React.useMemo(() => {
-    return services.map((service) => ({
-      ...service,
-      category: selectedCategory,
-    }))
-  }, [services, selectedCategory])
+    if (isMobile) {
+      // For mobile: combine all services from all categories
+      const allServices = Object.values(allServicesByCategory).flat()
+      return allServices.map((service) => ({
+        ...service,
+        category: Object.keys(allServicesByCategory).find(categoryId => 
+          allServicesByCategory[categoryId].some(s => s.id === service.id)
+        ) || 'Other',
+      }))
+    } else {
+      // For desktop: use services from Redux
+      return services.map((service) => ({
+        ...service,
+        category: selectedCategory,
+      }))
+    }
+  }, [services, selectedCategory, isMobile, allServicesByCategory])
 
   const filteredServices = servicesWithCategory.filter((service) => {
     const matchesSearch = service.lv_2_service.toLowerCase().includes(searchTerm.toLowerCase())
@@ -72,17 +96,34 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
   })
 
   // Group services by category
-  const serviceGroups = filteredServices.reduce(
-    (groups, service) => {
-      const category = service.category || 'Other'
-      if (!groups[category]) {
-        groups[category] = []
-      }
-      groups[category].push(service)
+  const serviceGroups = React.useMemo(() => {
+    if (isMobile) {
+      // For mobile: show ALL categories, not just ones with loaded services
+      const groups: { [key: string]: Service[] } = {}
+      categories.forEach((category) => {
+        const categoryServices = allServicesByCategory[category.id] || []
+        const filteredCategoryServices = categoryServices.filter((service) => {
+          const matchesSearch = service.lv_2_service.toLowerCase().includes(searchTerm.toLowerCase())
+          return matchesSearch
+        })
+        groups[category.id] = filteredCategoryServices
+      })
       return groups
-    },
-    {} as { [key: string]: typeof servicesWithCategory }
-  )
+    } else {
+      // For desktop: use existing logic
+      return filteredServices.reduce(
+        (groups, service) => {
+          const category = service.category || 'Other'
+          if (!groups[category]) {
+            groups[category] = []
+          }
+          groups[category].push(service)
+          return groups
+        },
+        {} as { [key: string]: typeof servicesWithCategory }
+      )
+    }
+  }, [isMobile, categories, allServicesByCategory, filteredServices, searchTerm])
 
   const handleServiceToggle = (serviceId: string) => {
     setSelectedServices((prev) => ({
@@ -103,6 +144,28 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
       ...prev,
       [groupName]: !prev[groupName],
     }))
+    
+    // For mobile: fetch services when expanding if not already loaded
+    if (isMobile && !expandedServiceGroups[groupName] && !allServicesByCategory[groupName]) {
+      fetchServicesForCategory(groupName)
+    }
+  }
+
+  const fetchServicesForCategory = async (categoryId: string) => {
+    try {
+      setCategoryLoadingStates((prev) => ({ ...prev, [categoryId]: true }))
+      const response = await dispatch(fetchServicesByCategory({ lv1ServiceId: categoryId, search: searchTerm }))
+      if (response.payload) {
+        setAllServicesByCategory((prev) => ({
+          ...prev,
+          [categoryId]: response.payload as Service[],
+        }))
+      }
+    } catch (error) {
+      console.error('Failed to fetch services for category:', categoryId, error)
+    } finally {
+      setCategoryLoadingStates((prev) => ({ ...prev, [categoryId]: false }))
+    }
   }
 
   const handleSave = () => {
@@ -168,6 +231,7 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
     serviceGroups,
     selectedCount,
     servicesLoading,
+    categoryLoadingStates,
     handleServiceToggle,
     handleQuantityChange,
     toggleServiceGroup,

@@ -18,6 +18,7 @@ interface MobileServiceSelectionModalProps {
   serviceGroups: { [key: string]: Service[] }
   selectedCount: number
   servicesLoading: boolean
+  categoryLoadingStates: { [key: string]: boolean }
   handleServiceToggle: (serviceId: string) => void
   handleQuantityChange: (serviceId: string, change: number) => void
   toggleServiceGroup: (groupName: string) => void
@@ -34,6 +35,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
   expandedServiceGroups,
   serviceGroups,
   servicesLoading,
+  categoryLoadingStates,
   handleServiceToggle,
   handleQuantityChange,
   toggleServiceGroup,
@@ -68,7 +70,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
           {/* List Services Header */}
           <div className="px-6 py-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">List services</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Services</h3>
               <span className="text-sm text-gray-600">
                 (Selected: {Object.values(selectedServices).reduce((sum, qty) => sum + qty, 0)})
               </span>
@@ -105,69 +107,80 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                     {/* Service Items */}
                     {expandedServiceGroups[groupName] && (
                       <div className="grid grid-cols-2 gap-3">
-                        {groupServices.map((service) => {
-                          const quantity = selectedServices[service.id] || 0
-                          const isSelected = quantity > 0
+                        {categoryLoadingStates[groupName] ? (
+                          <div className="col-span-2 flex items-center justify-center py-8">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                            <span className="ml-3 text-sm text-gray-600">Loading services...</span>
+                          </div>
+                        ) : groupServices.length > 0 ? (
+                          groupServices.map((service) => {
+                            const quantity = selectedServices[service.id] || 0
+                            const isSelected = quantity > 0
 
-                          return (
-                            <div
-                              key={service.id}
-                              className={`rounded-lg border p-3 transition-all ${
-                                isSelected
-                                  ? 'border-blue-600 bg-blue-600 text-white'
-                                  : 'border-gray-200 bg-white hover:border-gray-300'
-                              }`}
-                            >
-                              <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                                <div className="flex-1 min-w-0">
-                                  <h5
-                                    className={`text-xs font-normal truncate ${isSelected ? 'text-white' : 'text-gray-900'}`}
-                                  >
-                                    {service.lv_2_service}
-                                  </h5>
-                                  <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-blue-600'}`}>
-                                    {formatCurrency(service.amount)}
-                                  </p>
-                                </div>
+                            return (
+                              <div
+                                key={service.id}
+                                className={`rounded-lg border p-3 transition-all ${
+                                  isSelected
+                                    ? 'border-blue-600 bg-blue-600 text-white'
+                                    : 'border-gray-200 bg-white hover:border-gray-300'
+                                }`}
+                              >
+                                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                                  <div className="flex-1 min-w-0">
+                                    <h5
+                                      className={`text-xs font-normal truncate ${isSelected ? 'text-white' : 'text-gray-900'}`}
+                                    >
+                                      {service.lv_2_service}
+                                    </h5>
+                                    <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-blue-600'}`}>
+                                      {formatCurrency(service.amount)}
+                                    </p>
+                                  </div>
 
-                                <div className="mt-2 md:mt-0 md:ml-2 flex-shrink-0 md:self-auto self-end">
-                                  {isSelected ? (
-                                    <div className="flex items-center bg-gray-800/30 rounded-lg px-2 py-1 border border-gray-600">
+                                  <div className="mt-2 md:mt-0 md:ml-2 flex-shrink-0 md:self-auto self-end">
+                                    {isSelected ? (
+                                      <div className="flex items-center bg-gray-800/30 rounded-lg px-2 py-1 border border-gray-600">
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleQuantityChange(service.id, -1)}
+                                          className="w-5 h-5 p-0 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                                        >
+                                          <Minus className="w-3 h-3" />
+                                        </Button>
+                                        <span className="mx-2 text-xs font-bold text-white min-w-[16px] text-center">
+                                          {quantity}
+                                        </span>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleQuantityChange(service.id, 1)}
+                                          className="w-5 h-5 p-0 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                                        >
+                                          <Plus className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    ) : (
                                       <Button
                                         size="sm"
-                                        variant="ghost"
-                                        onClick={() => handleQuantityChange(service.id, -1)}
-                                        className="w-5 h-5 p-0 rounded-full bg-red-500 hover:bg-red-600 text-white"
-                                      >
-                                        <Minus className="w-3 h-3" />
-                                      </Button>
-                                      <span className="mx-2 text-xs font-bold text-white min-w-[16px] text-center">
-                                        {quantity}
-                                      </span>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => handleQuantityChange(service.id, 1)}
-                                        className="w-5 h-5 p-0 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                                        onClick={() => handleServiceToggle(service.id)}
+                                        className="w-6 h-6 p-0 rounded-full text-white"
+                                        style={{ backgroundColor: '#1B365D' }}
                                       >
                                         <Plus className="w-3 h-3" />
                                       </Button>
-                                    </div>
-                                  ) : (
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleServiceToggle(service.id)}
-                                      className="w-6 h-6 p-0 rounded-full text-white"
-                                      style={{ backgroundColor: '#1B365D' }}
-                                    >
-                                      <Plus className="w-3 h-3" />
-                                    </Button>
-                                  )}
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          )
-                        })}
+                            )
+                          })
+                        ) : (
+                          <div className="col-span-2 flex items-center justify-center py-8">
+                            <span className="text-sm text-gray-500">No services found</span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

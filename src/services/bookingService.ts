@@ -1,6 +1,5 @@
 import { apiService } from './api'
 import { API_ENDPOINTS } from '../config/endpoints'
-import { API_CONFIG } from '../config/api'
 
 // API Request Types for Booking Ticket
 export interface ServiceBooking {
@@ -31,7 +30,11 @@ export interface CreateTicketResponse {
 export const bookingService = {
   // Create booking ticket
   createTicket: async (ticketData: CreateTicketRequest): Promise<CreateTicketResponse> => {
+    // debug
+    console.log('createTicket request:', ticketData)
     const response = await apiService.post<CreateTicketResponse>(API_ENDPOINTS.WEBBOOKING.CREATE_TICKET, ticketData)
+    // debug
+    console.log('createTicket response:', response.data)
     return response.data
   },
 }

@@ -176,7 +176,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                 </Label>
                 <DateTimePicker
                   value={appointmentTime}
-                  onChange={(date: Date | undefined) => setAppointmentTime(date)}
+                  onChange={(date: Date | undefined) => {
+                    console.log('BookingForm onChange called with:', date)
+
+                    setAppointmentTime(date)
+                  }}
                   placeholder={t('booking.appointmentTime')}
                 />
               </div>
