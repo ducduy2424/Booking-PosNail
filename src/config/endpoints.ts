@@ -4,6 +4,8 @@ export const API_ENDPOINTS = {
   WEBBOOKING: {
     GET_SERVICES_LV1: '/webbooking/services-lv1',
     GET_SERVICES_LV2: '/webbooking/services',
+    GET_STAFFS: '/webbooking/staffs',
+    CREATE_TICKET: '/webbooking/tickets',
   },
 } as const
 

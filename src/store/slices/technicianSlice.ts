@@ -1,21 +1,17 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from '../index'
+import { technicianService } from '../../services/technicianService'
+import type {
+  TechnicianApiResponse,
+  TechnicianFilter as ServiceTechnicianFilter,
+} from '../../services/technicianService'
 
 // Define types for technician
 export interface Technician {
   id: string
+  avatar: string
   name: string
-  email: string
-  phone: string
-  avatar?: string
-  specialties: string[]
-  experience: number // years
-  rating: number
-  totalReviews: number
-  isActive: boolean
-  bio?: string
   createdAt: string
-  updatedAt: string
 }
 
 export interface TechnicianAvailability {
@@ -57,6 +53,27 @@ const initialState: TechnicianState = {
   filters: {},
   totalCount: 0,
 }
+
+// Helper function to transform API response to UI format
+const transformTechnicianFromApi = (apiTechnician: TechnicianApiResponse): Technician => ({
+  id: apiTechnician.id,
+  avatar: apiTechnician.avatar,
+  name: apiTechnician.name,
+  createdAt: apiTechnician.created_at,
+})
+
+// Async thunk for fetching technicians
+export const fetchTechnicians = createAsyncThunk(
+  'technician/fetchTechnicians',
+  async (filters: ServiceTechnicianFilter, { rejectWithValue }) => {
+    try {
+      const response = await technicianService.getTechnicians(filters)
+      return response.data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch technicians')
+    }
+  }
+)
 
 export const technicianSlice = createSlice({
   name: 'technician',
@@ -132,6 +149,23 @@ export const technicianSlice = createSlice({
       state.filters = {}
       state.totalCount = 0
     },
+  },
+  extraReducers: (builder) => {
+    // Handle fetchTechnicians
+    builder
+      .addCase(fetchTechnicians.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchTechnicians.fulfilled, (state, action) => {
+        state.loading = false
+        state.technicians = action.payload.map(transformTechnicianFromApi)
+        state.totalCount = action.payload.length
+      })
+      .addCase(fetchTechnicians.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
   },
 })
 

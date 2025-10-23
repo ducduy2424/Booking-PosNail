@@ -13,8 +13,6 @@ export interface RouteConfig {
 export const ROUTES = {
   HOME: '/',
   BOOKING: '/booking',
-  SERVICES: '/services',
-  TECHNICIANS: '/technicians',
   ABOUT: '/about',
   CONTACT: '/contact',
 } as const
@@ -23,8 +21,6 @@ export const ROUTES = {
 export const PAGE_TITLES = {
   [ROUTES.HOME]: 'SENVERSE - Book Appointment',
   [ROUTES.BOOKING]: 'SENVERSE - Book Appointment',
-  [ROUTES.SERVICES]: 'SENVERSE - Our Services',
-  [ROUTES.TECHNICIANS]: 'SENVERSE - Our Technicians',
   [ROUTES.ABOUT]: 'SENVERSE - About Us',
   [ROUTES.CONTACT]: 'SENVERSE - Contact',
 } as const
@@ -36,16 +32,6 @@ export const routeConfig: RouteConfig[] = [
     title: PAGE_TITLES[ROUTES.HOME],
     component: React.lazy(() => import('pages/BookingPage')),
     exact: true,
-  },
-  {
-    path: ROUTES.SERVICES,
-    title: PAGE_TITLES[ROUTES.SERVICES],
-    component: React.lazy(() => import('pages/ServicesPage')),
-  },
-  {
-    path: ROUTES.TECHNICIANS,
-    title: PAGE_TITLES[ROUTES.TECHNICIANS],
-    component: React.lazy(() => import('pages/TechniciansPage')),
   },
   {
     path: ROUTES.ABOUT,

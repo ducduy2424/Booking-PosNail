@@ -3,26 +3,53 @@ import { Button } from 'components/ui/button'
 import { Input } from 'components/ui/input'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'components/ui/dialog'
 import { Search, Check } from 'lucide-react'
-import { mockTechnicians } from 'data/mockData'
 import type { Technician } from 'store/slices/technicianSlice'
 import { useMobile } from 'hooks/useMobile'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
+import {
+  selectTechnicians,
+  selectTechnicianLoading,
+  selectTechnicianError,
+  fetchTechnicians,
+} from 'store/slices/technicianSlice'
 
 interface TechnicianSelectionModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (technician: Technician) => void
-  technicians?: Technician[]
+  serviceIds: string[]
 }
 
 export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  technicians = mockTechnicians,
+  serviceIds,
 }) => {
+  const dispatch = useAppDispatch()
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedTechnician, setSelectedTechnician] = React.useState<Technician | null>(null)
   const isMobile = useMobile()
+
+  // Redux state
+  const technicians = useAppSelector(selectTechnicians)
+  const loading = useAppSelector(selectTechnicianLoading)
+  const error = useAppSelector(selectTechnicianError)
+
+  // Fetch technicians when modal opens
+  React.useEffect(() => {
+    if (isOpen && serviceIds.length > 0) {
+      dispatch(fetchTechnicians({ serviceIds }))
+    }
+  }, [isOpen, serviceIds, dispatch])
+
+  // Reset selected technician when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setSelectedTechnician(null)
+      setSearchTerm('')
+    }
+  }, [isOpen])
 
   const filteredTechnicians = technicians.filter((technician) =>
     technician.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -37,6 +64,42 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
       onSave(selectedTechnician)
       onClose()
     }
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="w-full max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-hidden mx-4 sm:mx-auto">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading technicians...</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="w-full max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-hidden mx-4 sm:mx-auto">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="text-red-500 text-4xl mb-4">⚠️</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Technicians</h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <Button onClick={onClose} className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
   }
 
   return (
@@ -70,46 +133,56 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
         <div className="flex flex-col h-[60vh] sm:h-[50vh]">
           {/* Technicians Grid */}
           <div className="flex-1 px-4 sm:px-6 overflow-y-auto pb-20 sm:pb-24">
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4 pb-4">
-              {filteredTechnicians.map((technician) => {
-                const isSelected = selectedTechnician?.id === technician.id
+            {filteredTechnicians.length === 0 ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <div className="text-gray-400 text-4xl mb-4">👥</div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No Technicians Available</h3>
+                  <p className="text-gray-600">No technicians are available for the selected services.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4 pb-4">
+                {filteredTechnicians.map((technician) => {
+                  const isSelected = selectedTechnician?.id === technician.id
 
-                return (
-                  <div
-                    key={technician.id}
-                    className={`cursor-pointer transition-all hover:shadow-md rounded-lg p-2 sm:p-3 text-center ${
-                      isSelected ? 'bg-gray-100' : ''
-                    }`}
-                    onClick={() => handleTechnicianSelect(technician)}
-                  >
-                    <div className="relative mb-1 sm:mb-2">
-                      <img
-                        src={technician.avatar}
-                        alt={technician.name}
-                        className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.style.display = 'none'
-                          const fallback = target.nextElementSibling as HTMLElement
-                          if (fallback) fallback.style.display = 'flex'
-                        }}
-                      />
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-gradient-to-br from-pink-200 to-purple-200 rounded-full items-center justify-center hidden">
-                        <span className="text-sm sm:text-lg font-semibold text-gray-700">
-                          {technician.name.charAt(0)}
-                        </span>
-                      </div>
-                      {isSelected && (
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
-                          <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                  return (
+                    <div
+                      key={technician.id}
+                      className={`cursor-pointer transition-all hover:shadow-md rounded-lg p-2 sm:p-3 text-center ${
+                        isSelected ? 'bg-gray-100' : ''
+                      }`}
+                      onClick={() => handleTechnicianSelect(technician)}
+                    >
+                      <div className="relative mb-1 sm:mb-2">
+                        <img
+                          src={technician.avatar}
+                          alt={technician.name}
+                          className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.style.display = 'none'
+                            const fallback = target.nextElementSibling as HTMLElement
+                            if (fallback) fallback.style.display = 'flex'
+                          }}
+                        />
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-gradient-to-br from-pink-200 to-purple-200 rounded-full items-center justify-center hidden">
+                          <span className="text-sm sm:text-lg font-semibold text-gray-700">
+                            {technician.name.charAt(0)}
+                          </span>
                         </div>
-                      )}
+                        {isSelected && (
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
+                            <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="font-medium text-xs sm:text-sm text-gray-900">{technician.name}</h3>
                     </div>
-                    <h3 className="font-medium text-xs sm:text-sm text-gray-900">{technician.name}</h3>
-                  </div>
-                )
-              })}
-            </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

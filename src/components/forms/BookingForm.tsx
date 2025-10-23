@@ -6,6 +6,8 @@ import { Label } from 'components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from 'components/ui/card'
 import { Calendar, Clock, User, Plus, Minus } from 'lucide-react'
 import { DateTimePicker } from 'components/ui/datetime-picker'
+import type { Service } from 'store/slices/serviceSlice'
+import type { Technician } from 'store/slices/technicianSlice'
 
 interface AppointmentSlot {
   id: string
@@ -18,6 +20,9 @@ interface BookingFormProps {
   onTechnicianSelect?: () => void
   onSubmit?: (data: any) => void
   className?: string
+  selectedServices?: Service[]
+  hasServicesSelected?: boolean
+  selectedTechnician?: Technician | null
 }
 
 export const BookingForm: React.FC<BookingFormProps> = ({
@@ -25,6 +30,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   onTechnicianSelect,
   onSubmit,
   className = '',
+  selectedServices = [],
+  hasServicesSelected = false,
+  selectedTechnician = null,
 }) => {
   const { t } = useTranslation()
   const [formData, setFormData] = React.useState({
@@ -175,8 +183,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       </Label>
                       <div className="relative">
                         <Input
-                          placeholder={t('booking.selectService')}
-                          value={slot.service}
+                          placeholder={
+                            selectedServices.length > 0
+                              ? `${selectedServices.length} service(s) selected`
+                              : t('booking.selectService')
+                          }
+                          value={selectedServices.map((s) => s.name).join(', ')}
                           readOnly
                           onClick={onServiceSelect}
                           className="bg-white cursor-pointer"
@@ -197,14 +209,54 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                         {t('booking.selectTechnician')} <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative">
-                        <Input
-                          placeholder={t('booking.selectTechnician')}
-                          value={slot.technician}
-                          readOnly
-                          onClick={onTechnicianSelect}
-                          className="bg-white cursor-pointer"
-                        />
-                        <User className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
+                        {selectedTechnician ? (
+                          // Show selected technician with avatar and name
+                          <div
+                            onClick={hasServicesSelected ? onTechnicianSelect : undefined}
+                            className={`flex items-center gap-3 p-3 border rounded-lg bg-white ${
+                              hasServicesSelected ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-50'
+                            }`}
+                          >
+                            <img
+                              src={selectedTechnician.avatar}
+                              alt={selectedTechnician.name}
+                              className="w-8 h-8 rounded-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                                const fallback = target.nextElementSibling as HTMLElement
+                                if (fallback) fallback.style.display = 'flex'
+                              }}
+                            />
+                            <div className="w-8 h-8 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full items-center justify-center hidden">
+                              <span className="text-sm font-semibold text-gray-700">
+                                {selectedTechnician.name.charAt(0)}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-gray-900">{selectedTechnician.name}</p>
+                              <p className="text-xs text-gray-500">Selected technician</p>
+                            </div>
+                            <User className="w-4 h-4 text-gray-400" />
+                          </div>
+                        ) : (
+                          // Show placeholder input
+                          <Input
+                            placeholder={
+                              hasServicesSelected ? t('booking.selectTechnician') : 'Please select services first'
+                            }
+                            value=""
+                            readOnly
+                            onClick={hasServicesSelected ? onTechnicianSelect : undefined}
+                            className={`bg-white ${hasServicesSelected ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                            disabled={!hasServicesSelected}
+                          />
+                        )}
+                        {!selectedTechnician && (
+                          <User
+                            className={`absolute right-3 top-3 w-4 h-4 ${hasServicesSelected ? 'text-gray-400' : 'text-gray-300'}`}
+                          />
+                        )}
                       </div>
                     </div>
 

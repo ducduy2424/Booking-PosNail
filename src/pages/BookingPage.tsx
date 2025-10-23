@@ -6,6 +6,11 @@ import { TechnicianSelectionModal } from 'components/modals/TechnicianSelectionM
 import { SuccessModal } from 'components/modals/SuccessModal'
 import { usePageTitle } from 'hooks/usePageTitle'
 import backgroundImage from 'assets/images/background/background.avif'
+import type { Service } from 'store/slices/serviceSlice'
+import type { Technician } from 'store/slices/technicianSlice'
+import { bookingService } from 'services/bookingService'
+import type { CreateTicketRequest } from 'services/bookingService'
+import { API_CONFIG } from 'config/api'
 
 interface BookingPageProps {
   className?: string
@@ -18,30 +23,124 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
   const [isServiceModalOpen, setIsServiceModalOpen] = React.useState(false)
   const [isTechnicianModalOpen, setIsTechnicianModalOpen] = React.useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = React.useState(false)
-  const [selectedServices, setSelectedServices] = React.useState<any[]>([])
-  const [selectedTechnician, setSelectedTechnician] = React.useState<any>(null)
+  const [selectedServices, setSelectedServices] = React.useState<Service[]>([])
+  const [selectedTechnician, setSelectedTechnician] = React.useState<Technician | null>(null)
+  const [appointmentTime, setAppointmentTime] = React.useState<Date | null>(null)
+
+  // Extract service IDs for technician filtering
+  const serviceIds = selectedServices.map((service) => service.id)
+  const hasServicesSelected = selectedServices.length > 0
+
+  // Helper function to format appointment time
+  const formatAppointmentTime = (date: Date | null): string => {
+    if (!date) return ''
+
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }
+
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }
+
+    const time = date.toLocaleTimeString('vi-VN', timeOptions)
+    const dateStr = date.toLocaleDateString('vi-VN', dateOptions)
+
+    return `${time}, ${dateStr}`
+  }
 
   const handleServiceSelect = () => {
     setIsServiceModalOpen(true)
   }
 
   const handleTechnicianSelect = () => {
-    setIsTechnicianModalOpen(true)
+    if (hasServicesSelected) {
+      setIsTechnicianModalOpen(true)
+    }
   }
 
-  const handleServiceSave = (services: any[]) => {
+  const handleServiceSave = (services: Service[]) => {
     setSelectedServices(services)
     setIsServiceModalOpen(false)
   }
 
-  const handleTechnicianSave = (technician: any) => {
+  const handleTechnicianSave = (technician: Technician) => {
     setSelectedTechnician(technician)
     setIsTechnicianModalOpen(false)
   }
 
-  const handleBookingSubmit = (data: any) => {
-    console.log('Booking data:', data)
-    setIsSuccessModalOpen(true)
+  const handleBookingSubmit = async (data: any) => {
+    try {
+      // Helper function to parse phone number
+      const parsePhoneNumber = (phone: string) => {
+        // Remove all non-digit characters
+        const digits = phone.replace(/\D/g, '')
+
+        // Vietnamese phone number patterns
+        if (digits.startsWith('84')) {
+          // +84 format: remove country code
+          const withoutCountryCode = digits.substring(2)
+          return {
+            area_code: withoutCountryCode.substring(0, 3),
+            phone_number: withoutCountryCode.substring(3),
+          }
+        } else if (digits.startsWith('0')) {
+          // 0xx format: remove leading 0
+          const withoutLeadingZero = digits.substring(1)
+          return {
+            area_code: withoutLeadingZero.substring(0, 3),
+            phone_number: withoutLeadingZero.substring(3),
+          }
+        } else {
+          // Assume first 3 digits are area code
+          return {
+            area_code: digits.substring(0, 3),
+            phone_number: digits.substring(3),
+          }
+        }
+      }
+
+      const { area_code, phone_number } = parsePhoneNumber(data.phone)
+
+      // Transform form data to API format
+      const ticketData: CreateTicketRequest = {
+        store_id: parseInt(API_CONFIG.STORE_ID),
+        first_name: data.fullName,
+        last_name: data.lastName,
+        area_code_phone: area_code,
+        phone_number: phone_number,
+        email: data.email || '',
+        appointment_at: data.appointmentTime ? data.appointmentTime.toISOString().slice(0, 19).replace('T', ' ') : '',
+        staff_services: selectedTechnician
+          ? [
+              {
+                staff_id: selectedTechnician.id,
+                services: selectedServices.map((service) => ({
+                  service_id: service.id,
+                  quantity: 1, // Default quantity, can be enhanced later
+                })),
+              },
+            ]
+          : [],
+      }
+
+      // Call API to create ticket
+      const response = await bookingService.createTicket(ticketData)
+
+      console.log('Booking created successfully:', response)
+
+      // Store appointment time for success modal
+      setAppointmentTime(data.appointmentTime)
+      setIsSuccessModalOpen(true)
+    } catch (error) {
+      console.error('Error creating booking:', error)
+      // Handle error - could show error modal or toast
+      alert('Failed to create booking. Please try again.')
+    }
   }
 
   return (
@@ -71,6 +170,9 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
           onServiceSelect={handleServiceSelect}
           onTechnicianSelect={handleTechnicianSelect}
           onSubmit={handleBookingSubmit}
+          selectedServices={selectedServices}
+          hasServicesSelected={hasServicesSelected}
+          selectedTechnician={selectedTechnician}
         />
       </div>
 
@@ -85,14 +187,15 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         isOpen={isTechnicianModalOpen}
         onClose={() => setIsTechnicianModalOpen(false)}
         onSave={handleTechnicianSave}
+        serviceIds={serviceIds}
       />
 
       <SuccessModal
         isOpen={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
         bookingDetails={{
-          appointmentTime: '10:00, 09/09/2025',
-          service: selectedServices.length > 0 ? selectedServices[0].name : 'Selected Service',
+          appointmentTime: formatAppointmentTime(appointmentTime),
+          service: selectedServices.length > 0 ? selectedServices.map((s) => s.name).join(', ') : 'Selected Service',
           technician: selectedTechnician?.name || 'Selected Technician',
         }}
       />
