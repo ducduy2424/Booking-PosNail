@@ -6,7 +6,7 @@ import { buttonVariants } from './button'
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+function Calendar({ className, classNames, ...props }: CalendarProps) {
   React.useEffect(() => {
     const style = document.createElement('style')
     style.textContent = `
@@ -26,16 +26,6 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       }
       
       /* Cells */
-      .rdp-weekday, .rdp-day {
-        width: 36px !important;
-        min-width: 36px !important;
-        max-width: 36px !important;
-        font-weight: 600;
-        flex: 0 0 36px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
       
       .rdp-day {
         height: 40px !important;
@@ -51,7 +41,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       .rdp-day_selected,
       .rdp-day_selected .rdp-day_button,
       button.rdp-day_selected {
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
+        background: #1B365D !important;
         color: white !important;
         font-weight: bold !important;
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
@@ -61,22 +51,9 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         animation: pulse 2s infinite !important;
       }
 
-      .rdp-day_selected:hover,
-      .rdp-day_selected .rdp-day_button:hover,
-      button.rdp-day_selected:hover {
-        background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
-        transform: scale(1.1) !important;
-        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5) !important;
-      }
 
       /* Dropdown */
-      .rdp-caption_dropdowns {
-        display: flex !important;
-        gap: 8px !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
-      
+
       .rdp-dropdown {
         padding: 4px 8px !important;
         border-radius: 6px !important;
@@ -100,7 +77,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         box-shadow: 0 0 0 2px rgba(27, 54, 93, 0.1) !important;
       }
       
-      .rdp-dropdown_month {
+      .rdp-months_dropdown {
         margin-right: 4px !important;
       }
       
@@ -126,43 +103,6 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       button svg.rdp-chevron {
         fill: white !important;
       }
-
-      /* Today styling */
-      .rdp-day_today {
-        border: 2px solid #3b82f6 !important;
-        color: #2563eb !important;
-        background: linear-gradient(135deg, #dbeafe, #e0e7ff) !important;
-        font-weight: bold !important;
-        border-radius: 8px !important;
-      }
-
-      .rdp-day_today:hover {
-        background: linear-gradient(135deg, #bfdbfe, #c7d2fe) !important;
-      }
-
-      /* Regular day hover */
-      .rdp-day:hover:not(.rdp-day_selected):not(.rdp-day_today) {
-        background: linear-gradient(135deg, #dbeafe, #e0e7ff) !important;
-        transform: scale(1.05) !important;
-        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
-        border: 1px solid #93c5fd !important;
-        border-radius: 8px !important;
-      }
-
-      /* Force selected day styling with maximum specificity */
-      .rdp-root .rdp-day_selected,
-      .rdp-root .rdp-day_selected button,
-      .rdp-root button.rdp-day_selected,
-      .rdp-root .rdp-day_selected .rdp-day_button {
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
-        color: white !important;
-        font-weight: bold !important;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
-        transform: scale(1.1) !important;
-        border: 2px solid white !important;
-        border-radius: 8px !important;
-        animation: pulse 2s infinite !important;
-      }
     `
     document.head.appendChild(style)
 
@@ -174,9 +114,11 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
   return (
     <DayPicker
       mode="single"
-      showOutsideDays={showOutsideDays}
+      showOutsideDays={false}
       className={cn('p-4 bg-white', className)}
       classNames={{
+        today: `border-2 border-rounded border-blue-500`,
+        selected: `bg-[#1B365D] border-amber-500 text-white`,
         months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
         month: 'space-y-4 w-full',
         caption: 'flex justify-center items-center relative mb-1 px-10',
@@ -191,7 +133,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         head_row: 'flex w-full justify-around mb-1',
         head_cell:
           'text-gray-600 rounded-md font-semibold text-[0.7rem] text-center flex items-center justify-center h-9 w-9 flex-[0_0_36px]',
-        week: 'flex w-full justify-around mt-0.5',
+        week: 'flex w-full mt-0.5',
         day: cn(
           buttonVariants({ variant: 'ghost' }),
           'h-10 w-9 p-0 font-semibold text-gray-700 aria-selected:opacity-100 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200 hover:scale-105 flex-[0_0_36px]'
