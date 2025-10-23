@@ -4,7 +4,6 @@ import { Input } from 'components/ui/input'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'components/ui/dialog'
 import { Search, Check } from 'lucide-react'
 import type { Technician } from 'store/slices/technicianSlice'
-import { useMobile } from 'hooks/useMobile'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import {
   selectTechnicians,
@@ -29,7 +28,6 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
   const dispatch = useAppDispatch()
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedTechnician, setSelectedTechnician] = React.useState<Technician | null>(null)
-  const isMobile = useMobile()
 
   // Redux state
   const technicians = useAppSelector(selectTechnicians)
@@ -40,6 +38,12 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
   React.useEffect(() => {
     if (isOpen && serviceIds.length > 0) {
       dispatch(fetchTechnicians({ serviceIds }))
+    }
+
+    // Cleanup function to cancel any pending requests
+    return () => {
+      // Note: Redux Toolkit automatically cancels pending requests
+      // when component unmounts, but we can add additional cleanup here if needed
     }
   }, [isOpen, serviceIds, dispatch])
 

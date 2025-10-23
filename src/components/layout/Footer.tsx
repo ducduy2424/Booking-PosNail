@@ -43,19 +43,19 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <h3 className="font-semibold text-gray-900 mb-4">{t('footer.company')}</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <button className="text-gray-600 hover:text-gray-900 transition-colors text-left">
                     {t('footer.aboutLink')}
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <button className="text-gray-600 hover:text-gray-900 transition-colors text-left">
                     {t('footer.career')}
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <button className="text-gray-600 hover:text-gray-900 transition-colors text-left">
                     {t('footer.mobile')}
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -64,24 +64,24 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
               <h3 className="font-semibold text-gray-900 mb-4">{t('footer.contact')}</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <button className="text-gray-600 hover:text-gray-900 transition-colors text-left">
                     {t('footer.whyUs')}
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <button className="text-gray-600 hover:text-gray-900 transition-colors text-left">
                     {t('footer.partner')}
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <button className="text-gray-600 hover:text-gray-900 transition-colors text-left">
                     {t('footer.faq')}
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <button className="text-gray-600 hover:text-gray-900 transition-colors text-left">
                     {t('footer.blog')}
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>

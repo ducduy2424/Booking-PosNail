@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BookingForm } from 'components/forms/BookingForm'
 import { ServiceSelectionModal } from 'components/modals/ServiceSelectionModal'
@@ -41,10 +41,21 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
     },
   ])
 
-  // Extract service IDs for technician filtering from current slot
-  const currentSlot = appointmentSlots.find((slot) => slot.id === currentSlotId)
-  const serviceIds = currentSlot?.selectedServices.map((service) => service.id) || []
-  const hasServicesSelected = (currentSlot?.selectedServices.length || 0) > 0
+  // Extract service IDs for technician filtering from current slot - memoized for performance
+  const currentSlot = useMemo(
+    () => appointmentSlots.find((slot) => slot.id === currentSlotId),
+    [appointmentSlots, currentSlotId]
+  )
+
+  const serviceIds = useMemo(
+    () => currentSlot?.selectedServices.map((service) => service.id) || [],
+    [currentSlot?.selectedServices]
+  )
+
+  const hasServicesSelected = useMemo(
+    () => (currentSlot?.selectedServices.length || 0) > 0,
+    [currentSlot?.selectedServices.length]
+  )
 
   // Helper function to format appointment time
   const formatAppointmentTime = (date: Date | null): string => {
@@ -68,72 +79,81 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
     return `${time}, ${dateStr}`
   }
 
-  const handleServiceSelect = (slotId: string) => {
+  const handleServiceSelect = useCallback((slotId: string) => {
     setCurrentSlotId(slotId)
     setIsServiceModalOpen(true)
-  }
+  }, [])
 
-  const handleTechnicianSelect = (slotId: string) => {
-    setCurrentSlotId(slotId)
-    if (hasServicesSelected) {
-      setIsTechnicianModalOpen(true)
-    }
-  }
+  const handleTechnicianSelect = useCallback(
+    (slotId: string) => {
+      setCurrentSlotId(slotId)
+      if (hasServicesSelected) {
+        setIsTechnicianModalOpen(true)
+      }
+    },
+    [hasServicesSelected]
+  )
 
-  const handleServiceSave = (services: Service[]) => {
-    if (currentSlotId) {
-      setAppointmentSlots((prev) =>
-        prev.map((slot) => (slot.id === currentSlotId ? { ...slot, selectedServices: services } : slot))
-      )
-    }
-    setIsServiceModalOpen(false)
-    setCurrentSlotId(null)
-  }
+  const handleServiceSave = useCallback(
+    (services: Service[]) => {
+      if (currentSlotId) {
+        setAppointmentSlots((prev) =>
+          prev.map((slot) => (slot.id === currentSlotId ? { ...slot, selectedServices: services } : slot))
+        )
+      }
+      setIsServiceModalOpen(false)
+      setCurrentSlotId(null)
+    },
+    [currentSlotId]
+  )
 
-  const handleTechnicianSave = (technician: Technician) => {
-    if (currentSlotId) {
-      setAppointmentSlots((prev) =>
-        prev.map((slot) => (slot.id === currentSlotId ? { ...slot, selectedTechnician: technician } : slot))
-      )
-    }
-    setIsTechnicianModalOpen(false)
-    setCurrentSlotId(null)
-  }
+  const handleTechnicianSave = useCallback(
+    (technician: Technician) => {
+      if (currentSlotId) {
+        setAppointmentSlots((prev) =>
+          prev.map((slot) => (slot.id === currentSlotId ? { ...slot, selectedTechnician: technician } : slot))
+        )
+      }
+      setIsTechnicianModalOpen(false)
+      setCurrentSlotId(null)
+    },
+    [currentSlotId]
+  )
 
-  const handleAddSlot = () => {
+  const handleAddSlot = useCallback(() => {
     const newSlot: AppointmentSlot = {
       id: Date.now().toString(),
       selectedServices: [],
       selectedTechnician: null,
     }
     setAppointmentSlots((prev) => [...prev, newSlot])
-  }
+  }, [])
 
-  const handleRemoveSlot = (slotId: string) => {
+  const handleRemoveSlot = useCallback((slotId: string) => {
     setAppointmentSlots((prev) => prev.filter((slot) => slot.id !== slotId))
-  }
+  }, [])
 
   // Chuẩn hóa dữ liệu
   const handleBookingSubmit = async (data: any) => {
     try {
       // Validation: Check if appointment time is selected
       if (!data.appointmentTime) {
-        alert('Vui lòng chọn thời gian hẹn!')
+        alert(t('validation.selectAppointmentTime'))
         return
       }
 
       // Validation: Check required personal information fields
       if (!data.fullName || !data.lastName || !data.phone) {
-        alert('Vui lòng điền đầy đủ thông tin cá nhân!')
+        alert(t('validation.fillPersonalInformation'))
         return
       }
 
       // Validation: Check phone number format (US phone number validation only)
       const phoneRegex = /^(\+1|1)[2-9][0-9]{2}[2-9][0-9]{6}$/
-      const cleanPhone = data.phone.replace(/[\s\-\(\)]/g, '') // Remove spaces, dashes, parentheses
+      const cleanPhone = data.phone.replace(/[\s\-()]/g, '') // Remove spaces, dashes, parentheses
 
       if (!phoneRegex.test(cleanPhone)) {
-        alert('Số điện thoại không hợp lệ! Vui lòng nhập số điện thoại Mỹ (+1xxxxxxxxxx)')
+        alert(t('validation.phone'))
         return
       }
 
@@ -148,7 +168,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       }
 
       if (!isValidLength) {
-        alert('Số điện thoại Mỹ phải có 10 chữ số!')
+        alert(t('validation.phoneLength'))
         return
       }
 
@@ -156,7 +176,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       if (data.email && data.email.trim() !== '') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(data.email)) {
-          alert('Email không hợp lệ!')
+          alert(t('validation.email'))
           return
         }
       }
@@ -165,7 +185,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       const validSlots = appointmentSlots.filter((slot) => slot.selectedTechnician && slot.selectedServices.length > 0)
 
       if (validSlots.length === 0) {
-        alert('Vui lòng chọn ít nhất một dịch vụ và kỹ thuật viên!')
+        alert(t('validation.selectServiceAndTechnician'))
         return
       }
 
@@ -225,7 +245,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
 
       // Final validation: Ensure we have at least one staff service
       if (staff_services.length === 0) {
-        alert('Có lỗi xảy ra khi xử lý dữ liệu dịch vụ. Vui lòng thử lại!')
+        alert(t('validation.staffServicesError'))
         return
       }
 
@@ -241,7 +261,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         staff_services,
       }
 
-      // Call API to create ticket
+      // Call API to create ticket with proper error handling
       const response = await bookingService.createTicket(ticketData)
 
       console.log('Booking created successfully:', response)
@@ -249,10 +269,51 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       // Store appointment time for success modal
       setAppointmentTime(data.appointmentTime)
       setIsSuccessModalOpen(true)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating booking:', error)
-      // Handle error - could show error modal or toast
-      alert('Failed to create booking. Please try again.')
+
+      // Enhanced error handling with specific error messages
+      let errorMessage = t('validation.bookingError')
+
+      if (error.response) {
+        // Server responded with error status
+        const status = error.response.status
+        const serverMessage = error.response.data?.message || error.response.data?.error
+
+        switch (status) {
+          case 400:
+            errorMessage = serverMessage || t('validation.invalidData')
+            break
+          case 401:
+            errorMessage = t('validation.unauthorized')
+            break
+          case 403:
+            errorMessage = t('validation.forbidden')
+            break
+          case 404:
+            errorMessage = t('validation.notFound')
+            break
+          case 409:
+            errorMessage = serverMessage || t('validation.conflict')
+            break
+          case 422:
+            errorMessage = serverMessage || t('validation.validationError')
+            break
+          case 500:
+            errorMessage = t('validation.serverError')
+            break
+          default:
+            errorMessage = serverMessage || t('validation.bookingError')
+        }
+      } else if (error.request) {
+        // Network error
+        errorMessage = t('validation.networkError')
+      } else {
+        // Other error
+        errorMessage = error.message || t('validation.bookingError')
+      }
+
+      alert(errorMessage)
     }
   }
 

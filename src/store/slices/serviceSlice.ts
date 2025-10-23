@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from '../index'
 import { serviceService } from '../../services/serviceService'
-import type { ServiceLv1ApiResponse, ServiceLv2ApiResponse } from '../../types'
 
 // Define types for service
 export interface Service {
