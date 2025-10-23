@@ -48,7 +48,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   const minutes = Array.from({ length: 12 }, (_, i) => i * 5)
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
+    console.log('date: ', date)
+    console.log('Selected date:', selectedDate)
     if (selectedDate) {
+      console.log('Selected date inside if:', selectedDate)
       // Create a new date object to avoid mutation issues
       const newDate = new Date(selectedDate)
       // If there's already a time set, preserve it
@@ -91,13 +94,18 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
     }
   }
 
+  const today = new Date()
+  const year = today.getFullYear()
+  const monthIndex = today.getMonth()
+  const day = today.getDate()
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           className={cn(
-            'w-full h-11 rounded-xl border border-gray-300 bg-white text-left font-normal px-3 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 flex items-center',
+            'w-full h-11 border border-gray-300 bg-white text-left font-normal px-3 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 flex items-center',
             !date && 'text-gray-500',
             className
           )}
@@ -114,6 +122,9 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-gray-200">
           <div className="sm:h-[380px] flex items-center justify-center">
             <Calendar
+              startMonth={new Date(year, monthIndex, day)}
+              endMonth={new Date(year + 1, 12)}
+              required
               mode="single"
               selected={date}
               captionLayout="dropdown"
