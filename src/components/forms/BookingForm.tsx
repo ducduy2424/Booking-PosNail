@@ -226,7 +226,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                         // Show selected technician with avatar and name
                         <div
                           onClick={() => onTechnicianSelect?.(slot.id)}
-                          className="flex items-center gap-3 p-3 border rounded-lg bg-white cursor-pointer hover:bg-gray-50"
+                          className="flex items-center gap-3 p-1 border rounded-lg bg-white cursor-pointer hover:bg-gray-50"
                         >
                           <img
                             src={slot.selectedTechnician.avatar}
@@ -246,7 +246,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                           </div>
                           <div className="flex-1">
                             <p className="text-sm font-medium text-gray-900">{slot.selectedTechnician.name}</p>
-                            <p className="text-xs text-gray-500">Selected technician</p>
                           </div>
                           <User className="w-4 h-4 text-gray-400" />
                         </div>
