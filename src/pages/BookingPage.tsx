@@ -1,5 +1,7 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { BookingForm } from 'components/forms/BookingForm'
 import { ServiceSelectionModal } from 'components/modals/ServiceSelectionModal'
 import { TechnicianSelectionModal } from 'components/modals/TechnicianSelectionModal'
@@ -141,22 +143,38 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
     const seconds = String(date.getSeconds()).padStart(2, '0')
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
   }
 
   // Chuẩn hóa dữ liệu
+  const [formKey, setFormKey] = useState(0)
+
+  // Function to reset form data
+  const resetFormData = useCallback(() => {
+    setAppointmentTime(null)
+    setAppointmentSlots([
+      {
+        id: '1',
+        selectedServices: [],
+        selectedTechnician: null,
+      },
+    ])
+    // Force re-render of BookingForm by changing key
+    setFormKey((prev: number) => prev + 1)
+  }, [])
+
   const handleBookingSubmit = async (data: any) => {
     try {
       // Validation: Check if appointment time is selected
       if (!data.appointmentTime) {
-        alert(t('validation.selectAppointmentTime'))
+        toast.error(t('validation.selectAppointmentTime'))
         return
       }
 
       // Validation: Check required personal information fields
       if (!data.fullName || !data.lastName || !data.phone) {
-        alert(t('validation.fillPersonalInformation'))
+        toast.error(t('validation.fillPersonalInformation'))
         return
       }
 
@@ -165,7 +183,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       const phoneRegex = /^\d{10}$/ // Only 10 digits
 
       if (!phoneRegex.test(cleanPhone)) {
-        alert(t('validation.phone'))
+        toast.error(t('validation.phone'))
         return
       }
 
@@ -173,7 +191,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       if (data.email && data.email.trim() !== '') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(data.email)) {
-          alert(t('validation.email'))
+          toast.error(t('validation.email'))
           return
         }
       }
@@ -182,7 +200,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       const validSlots = appointmentSlots.filter((slot) => slot.selectedTechnician && slot.selectedServices.length > 0)
 
       if (validSlots.length === 0) {
-        alert(t('validation.selectServiceAndTechnician'))
+        toast.error(t('validation.selectServiceAndTechnician'))
         return
       }
 
@@ -242,7 +260,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
 
       // Final validation: Ensure we have at least one staff service
       if (staff_services.length === 0) {
-        alert(t('validation.staffServicesError'))
+        toast.error(t('validation.staffServicesError'))
         return
       }
 
@@ -310,7 +328,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         errorMessage = error.message || t('validation.bookingError')
       }
 
-      alert(errorMessage)
+      toast.error(errorMessage)
     }
   }
 
@@ -338,6 +356,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
 
         {/* Booking Form */}
         <BookingForm
+          key={formKey}
           onServiceSelect={handleServiceSelect}
           onTechnicianSelect={handleTechnicianSelect}
           onSubmit={handleBookingSubmit}
@@ -347,6 +366,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
           }}
           onAddSlot={handleAddSlot}
           onRemoveSlot={handleRemoveSlot}
+          onReset={resetFormData}
         />
       </div>
 
@@ -367,7 +387,11 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
 
       <SuccessModal
         isOpen={isSuccessModalOpen}
-        onClose={() => setIsSuccessModalOpen(false)}
+        onClose={() => {
+          setIsSuccessModalOpen(false)
+          // Reset form data when modal is closed
+          resetFormData()
+        }}
         bookingDetails={{
           appointmentTime: formatAppointmentTime(appointmentTime),
           service: appointmentSlots
@@ -379,6 +403,20 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
             .map((slot) => slot.selectedTechnician!.name)
             .join(', '),
         }}
+      />
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
     </div>
   )
