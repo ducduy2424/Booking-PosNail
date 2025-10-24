@@ -41,6 +41,10 @@
 - ✅ ESLint + Prettier tích hợp hoàn chỉnh
 - ✅ Hot reload development
 - ✅ Modern build system với Create React App
+- ✅ Dynamic store_id từ URL parameter
+- ✅ Auto-redirect để set store_id mặc định
+- ✅ Validation cho service selection trước khi chọn technician
+- ✅ Responsive layout với tỷ lệ 80/20 cho PC
 
 ## 📋 Yêu cầu hệ thống
 
@@ -119,6 +123,23 @@ npm run build
 # hoặc
 yarn build
 ```
+
+## 🆕 Cập nhật gần đây
+
+### Dynamic Store ID Management
+- **URL Parameter Support**: Store ID giờ đây được lấy từ URL parameter `?store_id=1` thay vì file .env
+- **Auto-redirect**: Tự động redirect để set store_id mặc định khi không có parameter
+- **Flexible Configuration**: Có thể thay đổi store_id mà không cần rebuild ứng dụng
+
+### Enhanced User Experience
+- **Service Validation**: Hiển thị toast thông báo khi chưa chọn service trước khi chọn technician
+- **Smart Time Selection**: DateTime picker tự động sử dụng thời gian hiện tại và làm tròn lên theo bước 5 phút
+- **Responsive Layout**: Layout tối ưu cho PC với tỷ lệ 80/20 (Service & Technician / Action Buttons)
+
+### Technical Improvements
+- **URL-based Configuration**: Loại bỏ dependency vào file .env cho store_id
+- **Better Validation**: Cải thiện validation flow cho user experience
+- **Layout Optimization**: Responsive design với grid system tối ưu
 
 ## 📁 Cấu trúc thư mục
 
