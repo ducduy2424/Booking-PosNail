@@ -72,8 +72,7 @@
     "success": "Thành công"
   },
   "validation": {
-    "phoneLength": "Số điện thoại phải có 10 chữ số!",
-    "phone": "Số điện thoại không hợp lệ! Vui lòng nhập số điện thoại Mỹ (+1xxxxxxxxxx)",
+    "phone": "Số điện thoại không hợp lệ! Vui lòng nhập chính xác 10 chữ số",
     "email": "Email không hợp lệ!",
     "selectServiceAndTechnician": "Vui lòng chọn ít nhất một dịch vụ và một kĩ thuật viên",
     "selectAppointmentTime": "Vui lòng chọn thời gian hẹn",

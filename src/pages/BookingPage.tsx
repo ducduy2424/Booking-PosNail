@@ -133,6 +133,18 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
     setAppointmentSlots((prev) => prev.filter((slot) => slot.id !== slotId))
   }, [])
 
+  // Helper function to format date to local string without timezone conversion
+  const formatLocalDateTime = (date: Date): string => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const seconds = String(date.getSeconds()).padStart(2, '0')
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  }
+
   // Chuẩn hóa dữ liệu
   const handleBookingSubmit = async (data: any) => {
     try {
@@ -148,27 +160,12 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         return
       }
 
-      // Validation: Check phone number format (US phone number validation only)
-      const phoneRegex = /^(\+1|1)[2-9][0-9]{2}[2-9][0-9]{6}$/
+      // Validation: Check phone number format (10 digits only)
       const cleanPhone = data.phone.replace(/[\s\-()]/g, '') // Remove spaces, dashes, parentheses
+      const phoneRegex = /^\d{10}$/ // Only 10 digits
 
       if (!phoneRegex.test(cleanPhone)) {
         alert(t('validation.phone'))
-        return
-      }
-
-      // Additional validation: Check if phone number has correct length
-      let phoneWithoutCountryCode = cleanPhone
-      let isValidLength = false
-
-      if (cleanPhone.startsWith('+1') || cleanPhone.startsWith('1')) {
-        // US phone number
-        phoneWithoutCountryCode = cleanPhone.replace(/^(\+1|1)/, '')
-        isValidLength = phoneWithoutCountryCode.length === 10
-      }
-
-      if (!isValidLength) {
-        alert(t('validation.phoneLength'))
         return
       }
 
@@ -257,7 +254,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
         area_code_phone: area_code,
         phone_number: phone_number,
         email: data.email || '',
-        appointment_at: data.appointmentTime ? data.appointmentTime.toISOString().slice(0, 19).replace('T', ' ') : '',
+        appointment_at: data.appointmentTime ? formatLocalDateTime(data.appointmentTime) : '',
         staff_services,
       }
 

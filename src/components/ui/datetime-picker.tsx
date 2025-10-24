@@ -47,6 +47,24 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   const hours = Array.from({ length: 24 }, (_, i) => i)
   const minutes = Array.from({ length: 12 }, (_, i) => i * 5)
 
+  // Get current time
+  const now = new Date()
+  const currentHour = now.getHours()
+  const currentMinute = now.getMinutes()
+
+  // Check if selected date is today
+  const isToday =
+    date &&
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+
+  // Filter hours and minutes based on current time if today is selected
+  const availableHours = isToday ? hours.filter((hour) => hour >= currentHour) : hours
+
+  const availableMinutes =
+    isToday && date && date.getHours() === currentHour ? minutes.filter((minute) => minute >= currentMinute) : minutes
+
   const handleDateSelect = (selectedDate: Date | undefined) => {
     console.log('date: ', date)
     console.log('Selected date:', selectedDate)
@@ -54,16 +72,38 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       console.log('Selected date inside if:', selectedDate)
       // Create a new date object to avoid mutation issues
       const newDate = new Date(selectedDate)
-      // If there's already a time set, preserve it
-      if (date) {
-        newDate.setHours(date.getHours())
-        newDate.setMinutes(date.getMinutes())
-        newDate.setSeconds(0)
-        newDate.setMilliseconds(0)
+
+      // Check if selected date is today
+      const isSelectedToday =
+        selectedDate.getDate() === now.getDate() &&
+        selectedDate.getMonth() === now.getMonth() &&
+        selectedDate.getFullYear() === now.getFullYear()
+
+      if (isSelectedToday) {
+        // If selecting today, set time to current time or later
+        if (date && date.getHours() >= currentHour) {
+          // Preserve existing time if it's still valid for today
+          newDate.setHours(date.getHours())
+          newDate.setMinutes(date.getMinutes())
+        } else {
+          // Set to current hour + 1, or current hour if minutes are available
+          const nextHour = currentMinute < 55 ? currentHour : currentHour + 1
+          newDate.setHours(nextHour)
+          newDate.setMinutes(nextHour === currentHour ? Math.ceil(currentMinute / 5) * 5 : 0)
+        }
       } else {
-        // Default to 9:00 AM
-        newDate.setHours(9, 0, 0, 0)
+        // If there's already a time set, preserve it
+        if (date) {
+          newDate.setHours(date.getHours())
+          newDate.setMinutes(date.getMinutes())
+        } else {
+          // Default to 9:00 AM
+          newDate.setHours(9, 0, 0, 0)
+        }
       }
+
+      newDate.setSeconds(0)
+      newDate.setMilliseconds(0)
       setDate(newDate)
       setMonth(newDate)
       onChange?.(newDate)
@@ -141,7 +181,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
             <div className="flex flex-col p-3 w-1/2 sm:w-20">
               <div className="text-xs font-semibold text-gray-700 mb-3 text-center uppercase tracking-wide">Hours</div>
               <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-y-auto flex-1 pb-2 sm:pb-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                {hours.map((hour) => (
+                {availableHours.map((hour) => (
                   <Button
                     key={hour}
                     variant={date && date.getHours() === hour ? 'default' : 'ghost'}
@@ -166,7 +206,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
                 Minutes
               </div>
               <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-y-auto flex-1 pb-2 sm:pb-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                {minutes.map((minute) => (
+                {availableMinutes.map((minute) => (
                   <Button
                     key={minute}
                     variant={date && date.getMinutes() === minute ? 'default' : 'ghost'}

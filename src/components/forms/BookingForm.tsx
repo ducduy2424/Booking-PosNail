@@ -143,14 +143,35 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   <Label htmlFor="phone" className="text-sm font-medium">
                     {t('booking.phone_field')} <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder={t('booking.phone_field')}
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    required
-                  />
+                   <div className="relative">
+                     <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
+                       +1
+                     </div>
+                     <Input
+                       id="phone"
+                       type="tel"
+                       placeholder="(555) 123-4567"
+                       value={formData.phone}
+                       onChange={(e) => {
+                         const value = e.target.value.replace(/\D/g, '') // Chỉ giữ số
+                         let formatted = value
+                         
+                         // Format US phone number: (XXX) XXX-XXXX
+                         if (value.length >= 6) {
+                           formatted = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`
+                         } else if (value.length >= 3) {
+                           formatted = `(${value.slice(0, 3)}) ${value.slice(3)}`
+                         } else if (value.length > 0) {
+                           formatted = `(${value}`
+                         }
+                         
+                         handleInputChange('phone', formatted)
+                       }}
+                       className="pl-12"
+                       maxLength={14}
+                       required
+                     />
+                   </div>
                 </div>
 
                 <div className="space-y-2">
