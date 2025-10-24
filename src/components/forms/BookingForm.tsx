@@ -323,9 +323,18 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             </div>
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg">
-              Book now
-            </Button>
+            <div className="flex justify-center gap-[10px] !mt-[50px]">
+              <Button
+                type="submit"
+                className="relative overflow-hidden bg-gradient-to-r from-[#006BFF] to-[#00AAFF] w-[260px] rounded-[50px] px-[16px] py-[24px] text-white text-lg
+                   before:absolute before:inset-0 before:rounded-[50px] before:bg-[linear-gradient(120deg,rgba(255,255,255,0.4)_0%,rgba(255,255,255,0)_60%)] 
+                    before:-translate-x-full before:transition-transform before:duration-700 hover:before:translate-x-full
+                    animate-border-rotate
+                  "
+              >
+                Book now
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
