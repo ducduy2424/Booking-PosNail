@@ -23,7 +23,8 @@
   "services": {
     "title": "Select Services",
     "search": "Search",
-    "bookNow": "Book Now"
+    "bookNow": "Book Now",
+    "selectServices": "Select services"
   },
   "technicians": {
     "title": "Our Technicians",

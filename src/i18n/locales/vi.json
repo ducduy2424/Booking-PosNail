@@ -23,7 +23,8 @@
   "services": {
     "title": "Chọn dịch vụ",
     "search": "Tìm kiếm",
-    "bookNow": "Đặt ngay"
+    "bookNow": "Đặt ngay",
+    "selectServices": "Chọn dịch vụ"
   },
   "technicians": {
     "title": "Kỹ thuật viên",

@@ -89,15 +89,19 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
 
   const handleTechnicianSelect = useCallback(
     (slotId: string) => {
+      // Find the slot to check if it has services selected
+      const slot = appointmentSlots.find((s) => s.id === slotId)
+      const hasServices = slot && slot.selectedServices.length > 0
+      
       setCurrentSlotId(slotId)
-      if (hasServicesSelected) {
+      if (hasServices) {
         setIsTechnicianModalOpen(true)
       } else {
         // Show toast message when no services are selected
         toast.warning(t('validation.selectServicesFirst'))
       }
     },
-    [hasServicesSelected, t]
+    [appointmentSlots, t]
   )
 
   const handleServiceSave = useCallback(
