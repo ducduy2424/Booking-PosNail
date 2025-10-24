@@ -1,6 +1,7 @@
 {
-    "buildCommnad": "npm install --legacy--peer-deps && npm run build",
-    "outputDirectory": "build",
+    "buildCommand": "npm install --legacy-peer-deps && npm run build",
     "installCommand": "npm install --legacy-peer-deps",
-    "framework": "create-react-app"
-}
+    "framework": "create-react-app",
+    "outputDirectory": "build"
+  }
+  
