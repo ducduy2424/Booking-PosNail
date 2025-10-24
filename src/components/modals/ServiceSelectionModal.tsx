@@ -46,6 +46,19 @@ export const ServiceSelectionModal: React.FC<ServiceSelectionModalProps> = ({ is
   }>({})
   const [categoryLoadingStates, setCategoryLoadingStates] = React.useState<{ [key: string]: boolean }>({})
 
+  // Reset modal state when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      // Reset all modal states when modal closes
+      setSearchTerm('')
+      setSelectedCategory('')
+      setSelectedServices({})
+      setExpandedServiceGroups({})
+      setAllServicesByCategory({})
+      setCategoryLoadingStates({})
+    }
+  }, [isOpen])
+
   // Fetch categories on mount
   React.useEffect(() => {
     if (isOpen && categories.length === 0) {

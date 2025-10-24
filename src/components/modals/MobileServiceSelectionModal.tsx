@@ -84,7 +84,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 <span className="ml-3 text-gray-600">{t('services.loadingServices')}</span>
               </div>
-            ) : (
+            ) : Object.keys(serviceGroups).length > 0 ? (
               <div className="space-y-4 pb-4">
                 {Object.entries(serviceGroups).map(([groupName, groupServices]) => (
                   <div key={groupName} className="space-y-2">
@@ -184,6 +184,21 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                     )}
                   </div>
                 ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="text-gray-400 mb-4">
+                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.noServicesFound')}</h3>
+                <p className="text-sm text-gray-500 max-w-md">{t('services.noServicesDescription')}</p>
               </div>
             )}
           </div>

@@ -71,32 +71,34 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
 
         <div className="flex flex-col h-[60vh] sm:h-[50vh] overflow-x-auto">
           {/* Category Selection - Level 1 */}
-          <div className="px-4 sm:px-6 py-4 border-b">
-            <div
-              className="flex gap-3 overflow-x-auto pb-2"
-              style={{
-                scrollbarWidth: 'thin',
-                scrollbarColor: '#d1d5db transparent',
-                minHeight: '60px',
-                alignItems: 'center',
-                maxWidth: '100%',
-              }}
-            >
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex-shrink-0 px-4 py-3 rounded-xl transition-all ${
-                    selectedCategory === category.id
-                      ? 'bg-[#1B365D] text-white border-[#1B365D]'
-                      : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
-                  }`}
-                >
-                  {category.lv_1_service}
-                </Button>
-              ))}
+          {categories.length > 0 && (
+            <div className="px-4 sm:px-6 py-4 border-b">
+              <div
+                className="flex gap-3 overflow-x-auto pb-2"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#d1d5db transparent',
+                  minHeight: '60px',
+                  alignItems: 'center',
+                  maxWidth: '100%',
+                }}
+              >
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex-shrink-0 px-4 py-3 rounded-xl transition-all ${
+                      selectedCategory === category.id
+                        ? 'bg-[#1B365D] text-white border-[#1B365D]'
+                        : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
+                    }`}
+                  >
+                    {category.lv_1_service}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Services Grid */}
           <div className="flex-1 px-4 sm:px-6 overflow-y-auto pb-20 sm:pb-24">
@@ -173,13 +175,16 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="text-gray-400 mb-4">
                   <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.noServicesFound')}</h3>
-                <p className="text-sm text-gray-500 max-w-md">
-                  {t('services.noServicesDescription')}
-                </p>
+                <p className="text-sm text-gray-500 max-w-md">{t('services.noServicesDescription')}</p>
               </div>
             )}
           </div>
