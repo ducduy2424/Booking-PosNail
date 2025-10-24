@@ -2,6 +2,9 @@
   "header": {
     "brandName": "SENVERSE"
   },
+  "placeholder": {
+    "search": "Search"
+  },
   "booking": {
     "title": "BOOK APPOINTMENT",
     "subtitle": "Please fill in the information below to book an appointment.",
@@ -22,7 +25,10 @@
   },
   "services": {
     "title": "Select Services",
-    "search": "Search",
+    "description": "Choose services for your appointment. You can search and select multiple services with quantities.",
+    "loadingServices": "Loading services...",
+    "noServicesFound": "No services found",
+    "noServicesDescription": "This store currently has no services available. Please contact the store for more information.",
     "bookNow": "Book Now",
     "selectServices": "Select services"
   },
@@ -31,7 +37,12 @@
     "subtitle": "Meet our skilled and experienced nail technicians",
     "experience": "Experience",
     "specialties": "Specialties",
-    "bookWith": "Book with"
+    "bookWith": "Book with",
+    "selectTechnician": "Select Technician",
+    "loadingTechnicians": "Loading technicians...",
+    "errorLoadingTechnicians": "Error loading technicians",
+    "noTechniciansAvailable": "No technicians available",
+    "noTechniciansAvailableDescription": "No technicians are available for the selected services."
   },
   "about": {
     "title": "About SENVERSE",
@@ -70,7 +81,9 @@
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
-    "success": "Success"
+    "success": "Success",
+    "close": "Close",
+    "save": "Save"
   }, 
   "validation": {
     "phone": "Invalid phone number! Please enter exactly 10 digits",

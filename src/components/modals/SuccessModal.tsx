@@ -56,12 +56,10 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose, boo
             {bookingDetails && (
               <div className="text-sm text-gray-600 space-y-1">
                 {bookingDetails.appointmentTime && (
-                  <p className="animate-fade-in delay-500">📅 {bookingDetails.appointmentTime}</p>
+                  <p className="animate-fade-in delay-500">{bookingDetails.appointmentTime}</p>
                 )}
-                {bookingDetails.service && <p className="animate-fade-in delay-700">💅 {bookingDetails.service}</p>}
-                {bookingDetails.technician && (
-                  <p className="animate-fade-in delay-900">👩‍💼 {bookingDetails.technician}</p>
-                )}
+                {bookingDetails.service && <p className="animate-fade-in delay-700"> {bookingDetails.service}</p>}
+                {bookingDetails.technician && <p className="animate-fade-in delay-900">{bookingDetails.technician}</p>}
               </div>
             )}
           </div>

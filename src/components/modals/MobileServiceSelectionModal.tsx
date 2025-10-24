@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'component
 import { Search, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react'
 import type { Service, ServiceCategory } from 'store/slices/serviceSlice'
 import { formatCurrency } from 'lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface MobileServiceSelectionModalProps {
   isOpen: boolean
@@ -41,16 +42,15 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
   toggleServiceGroup,
   handleSave,
 }) => {
+  const { t } = useTranslation()
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden" autoFocus={false}>
-        <DialogTitle className="sr-only">Select services</DialogTitle>
-        <DialogDescription className="sr-only">
-          Choose services for your appointment. You can search and select multiple services with quantities.
-        </DialogDescription>
+        <DialogTitle className="sr-only">{t('services.selectServices')}</DialogTitle>
+        <DialogDescription className="sr-only">{t('services.description')}</DialogDescription>
         {/* Header */}
         <div className="px-6 py-4 border-b">
-          <h2 className="text-2xl font-bold text-gray-900 text-center">Select services</h2>
+          <h2 className="text-2xl font-bold text-gray-900 text-center">{t('services.selectServices')}</h2>
         </div>
 
         {/* Search Bar */}
@@ -58,7 +58,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
-              placeholder="Search"
+              placeholder={t('placeholder.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 h-12 rounded-xl border-gray-300 focus:border-blue-500"
@@ -70,7 +70,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
           {/* List Services Header */}
           <div className="px-6 py-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Services</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('services.selectServices')}</h3>
               <span className="text-sm text-gray-600">
                 (Selected: {Object.values(selectedServices).reduce((sum, qty) => sum + qty, 0)})
               </span>
@@ -82,7 +82,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
             {servicesLoading ? (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Loading services...</span>
+                <span className="ml-3 text-gray-600">{t('services.loadingServices')}</span>
               </div>
             ) : (
               <div className="space-y-4 pb-4">
@@ -94,7 +94,6 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                       className="w-full justify-between rounded-xl px-4 py-3 bg-blue-600 text-white border-blue-600"
                     >
                       <div className="flex items-center">
-                        <span className="mr-2 text-lg">💅</span>
                         {categories.find((cat) => cat.id === groupName)?.lv_1_service || groupName}
                       </div>
                       {expandedServiceGroups[groupName] ? (
@@ -110,7 +109,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                         {categoryLoadingStates[groupName] ? (
                           <div className="col-span-2 flex items-center justify-center py-8">
                             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                            <span className="ml-3 text-sm text-gray-600">Loading services...</span>
+                            <span className="ml-3 text-sm text-gray-600">{t('services.loadingServices')}</span>
                           </div>
                         ) : groupServices.length > 0 ? (
                           groupServices.map((service) => {
@@ -178,7 +177,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                           })
                         ) : (
                           <div className="col-span-2 flex items-center justify-center py-8">
-                            <span className="text-sm text-gray-500">No services found</span>
+                            <span className="text-sm text-gray-500">{t('services.noServicesFound')}</span>
                           </div>
                         )}
                       </div>
@@ -197,10 +196,10 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                 onClick={onClose}
                 className="flex-1 h-12 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-100"
               >
-                Close
+                {t('common.close')}
               </Button>
               <Button onClick={handleSave} className="flex-1 h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white">
-                Save
+                {t('common.save')}
               </Button>
             </div>
           </div>

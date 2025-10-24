@@ -92,7 +92,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       // Find the slot to check if it has services selected
       const slot = appointmentSlots.find((s) => s.id === slotId)
       const hasServices = slot && slot.selectedServices.length > 0
-      
+
       setCurrentSlotId(slotId)
       if (hasServices) {
         setIsTechnicianModalOpen(true)

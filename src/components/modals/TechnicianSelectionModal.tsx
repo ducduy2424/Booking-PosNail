@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'component
 import { Search, Check } from 'lucide-react'
 import type { Technician } from 'store/slices/technicianSlice'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import {
   selectTechnicians,
   selectTechnicianLoading,
@@ -25,6 +26,7 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
   onSave,
   serviceIds,
 }) => {
+  const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedTechnician, setSelectedTechnician] = React.useState<Technician | null>(null)
@@ -78,7 +80,7 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading technicians...</p>
+              <p className="text-gray-600">{t('technicians.loadingTechnicians')}</p>
             </div>
           </div>
         </DialogContent>
@@ -94,10 +96,10 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="text-red-500 text-4xl mb-4">⚠️</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Technicians</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('technicians.errorLoadingTechnicians')}</h3>
               <p className="text-gray-600 mb-4">{error}</p>
               <Button onClick={onClose} className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
-                Close
+                {t('common.close')}
               </Button>
             </div>
           </div>
@@ -112,20 +114,18 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
         className="w-full max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-hidden mx-4 sm:mx-auto"
         autoFocus={false}
       >
-        <DialogTitle className="sr-only">Please select technician</DialogTitle>
-        <DialogDescription className="sr-only">
-          Choose a technician for your appointment. You can search and select from available technicians.
-        </DialogDescription>
+        <DialogTitle className="sr-only">{t('technicians.title')}</DialogTitle>
+        <DialogDescription className="sr-only"> {t('technicians.description')} </DialogDescription>
         {/* Header */}
         <div className="px-4 sm:px-6 py-4 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 text-center sm:text-left">
-              Please select technician
+              {t('technicians.selectTechnician')}
             </h2>
             <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               <Input
-                placeholder="Search"
+                placeholder={t('placeholder.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-10 sm:h-10 rounded-lg border-gray-300 focus:border-blue-500 w-full sm:w-64"
@@ -141,8 +141,10 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
               <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <div className="text-gray-400 text-4xl mb-4">👥</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No Technicians Available</h3>
-                  <p className="text-gray-600">No technicians are available for the selected services.</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {t('technicians.noTechniciansAvailable')}
+                  </h3>
+                  <p className="text-gray-600">{t('technicians.noTechniciansAvailableDescription')}</p>
                 </div>
               </div>
             ) : (
@@ -197,14 +199,14 @@ export const TechnicianSelectionModal: React.FC<TechnicianSelectionModalProps> =
                 onClick={onClose}
                 className="w-full sm:w-auto px-6 sm:px-8 h-10 sm:h-10 rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100"
               >
-                Close
+                {t('common.close')}
               </Button>
               <Button
                 onClick={handleSave}
                 className="w-full sm:w-auto px-6 sm:px-8 h-10 sm:h-10 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={!selectedTechnician}
               >
-                Save
+                {t('common.save')}
               </Button>
             </div>
           </div>

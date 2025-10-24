@@ -155,16 +155,19 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       placeholder="(555) 123-4567"
                       value={formData.phone}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '') // Chỉ giữ số
-                        let formatted = value
+                        const inputValue = e.target.value
+                        const value = inputValue.replace(/\D/g, '') // Chỉ giữ số
+                        let formatted = ''
 
                         // Format US phone number: (XXX) XXX-XXXX
-                        if (value.length >= 6) {
-                          formatted = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`
-                        } else if (value.length >= 3) {
-                          formatted = `(${value.slice(0, 3)}) ${value.slice(3)}`
-                        } else if (value.length > 0) {
+                        if (value.length === 0) {
+                          formatted = ''
+                        } else if (value.length <= 3) {
                           formatted = `(${value}`
+                        } else if (value.length <= 6) {
+                          formatted = `(${value.slice(0, 3)}) ${value.slice(3)}`
+                        } else {
+                          formatted = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`
                         }
 
                         handleInputChange('phone', formatted)

@@ -2,6 +2,9 @@
   "header": {
     "brandName": "SENVERSE"
   },
+  "placeholder": {
+    "search": "Tìm kiếm"
+  },
   "booking": {
     "title": "ĐẶT LỊCH HẸN",
     "subtitle": "Vui lòng điền thông tin bên dưới để đặt lịch hẹn.",
@@ -22,7 +25,12 @@
   },
   "services": {
     "title": "Chọn dịch vụ",
-    "search": "Tìm kiếm",
+    "description": "Chọn dịch vụ cho cuộc hẹn của bạn. Bạn có thể tìm kiếm và chọn nhiều dịch vụ với số lượng.",
+    "loadingServices": "Đang tải dịch vụ...",
+    "noServicesFound": "Không tìm thấy dịch vụ",
+    "noServicesDescription": "Cửa hàng hiện tại chưa có dịch vụ nào. Vui lòng liên hệ với cửa hàng để biết thêm thông tin.",
+    "close": "Đóng",
+    "save": "Lưu",
     "bookNow": "Đặt ngay",
     "selectServices": "Chọn dịch vụ"
   },
@@ -31,7 +39,14 @@
     "subtitle": "Gặp gỡ các kỹ thuật viên có tay nghề cao và kinh nghiệm",
     "experience": "Kinh nghiệm",
     "specialties": "Chuyên môn",
-    "bookWith": "Đặt lịch với"
+    "bookWith": "Đặt lịch với",
+    "loadingTechnicians": "Đang tải kỹ thuật viên...",
+    "errorLoadingTechnicians": "Lỗi khi tải kỹ thuật viên",
+    "close": "Đóng",
+    "save": "Lưu",
+    "selectTechnician": "Chọn kỹ thuật viên",
+    "noTechniciansAvailable": "Không có kỹ thuật viên nào",
+    "noTechniciansAvailableDescription": "Không có kỹ thuật viên nào cho các dịch vụ đã chọn."
   },
   "about": {
     "title": "Về SENVERSE",

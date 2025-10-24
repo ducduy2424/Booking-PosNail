@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from 'component
 import { Search, Plus, Minus } from 'lucide-react'
 import type { Service, ServiceCategory } from 'store/slices/serviceSlice'
 import { formatCurrency } from 'lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface DesktopServiceSelectionModalProps {
   isOpen: boolean
@@ -41,22 +42,25 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
   handleQuantityChange,
   handleSave,
 }) => {
+  const { t } = useTranslation()
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-4xl max-h-[90vh] sm:max-h-[80vh] mx-4 sm:mx-auto" autoFocus={false}>
-        <DialogTitle className="sr-only">Select services</DialogTitle>
+        <DialogTitle className="sr-only">{t('services.selectServices')}</DialogTitle>
         <DialogDescription className="sr-only">
-          Choose services for your appointment. You can search, filter by category, and select multiple services with
+          {t('services.description')}
           quantities.
         </DialogDescription>
         {/* Header */}
         <div className="px-4 sm:px-6 py-4 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 text-center sm:text-left">Select services</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 text-center sm:text-left">
+              {t('services.selectServices')}
+            </h2>
             <div className="relative w-full sm:w-auto sm:min-w-0">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               <Input
-                placeholder="Search"
+                placeholder={t('placeholder.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 h-10 sm:h-10 rounded-lg border-gray-300 focus:border-blue-500 w-full sm:w-64 sm:min-w-0"
@@ -88,7 +92,6 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                       : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
                   }`}
                 >
-                  <span className="mr-2 text-lg">💅</span>
                   {category.lv_1_service}
                 </Button>
               ))}
@@ -100,9 +103,9 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
             {servicesLoading ? (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Loading services...</span>
+                <span className="ml-3 text-gray-600">{t('services.loadingServices')}</span>
               </div>
-            ) : (
+            ) : filteredServices.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 pb-4">
                 {filteredServices.map((service) => {
                   const quantity = selectedServices[service.id] || 0
@@ -166,6 +169,18 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                   )
                 })}
               </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="text-gray-400 mb-4">
+                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('services.noServicesFound')}</h3>
+                <p className="text-sm text-gray-500 max-w-md">
+                  {t('services.noServicesDescription')}
+                </p>
+              </div>
             )}
           </div>
 
@@ -177,13 +192,13 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                 onClick={onClose}
                 className="w-full sm:w-auto px-6 sm:px-8 h-10 sm:h-10 rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100"
               >
-                Close
+                {t('common.close')}
               </Button>
               <Button
                 onClick={handleSave}
                 className="w-full sm:w-auto px-6 sm:px-8 h-10 sm:h-10 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
               >
-                Save
+                {t('common.save')}
               </Button>
             </div>
           </div>
