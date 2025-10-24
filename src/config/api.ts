@@ -1,7 +1,9 @@
+import { getStoreIdFromUrl } from '../utils/helpers'
+
 // API Configuration
 export const API_CONFIG = {
   BASE_URL: process.env.REACT_APP_API_URL,
-  STORE_ID: process.env.REACT_APP_STORE_ID || '1',
+  STORE_ID: getStoreIdFromUrl(), // Get store_id from URL parameter instead of .env
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000,

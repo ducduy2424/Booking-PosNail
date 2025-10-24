@@ -4,6 +4,7 @@ import { Header } from 'components/layout/Header'
 import { Footer } from 'components/layout/Footer'
 import LoadingSpinner from '../common/LoadingSpinner'
 import { usePageTitle } from 'hooks/usePageTitle'
+import { useStoreIdRedirect } from 'hooks/useStoreIdRedirect'
 import { routeConfig, ROUTES } from 'routes'
 
 // Loading component
@@ -15,6 +16,7 @@ const LoadingFallback: React.FC = () => (
 
 // Inner component that uses router hooks
 const RouterContent: React.FC = () => {
+  useStoreIdRedirect() // Auto-redirect to add store_id parameter if missing
   usePageTitle() // Auto-update page title based on route
 
   return (

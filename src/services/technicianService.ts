@@ -1,6 +1,6 @@
 import { apiService } from './api'
 import { API_ENDPOINTS, addQueryParams } from '../config/endpoints'
-import { API_CONFIG } from '../config/api'
+import { getStoreIdFromUrl } from '../utils/helpers'
 import type { ApiResponse } from '../types'
 
 // API Response Types for Technician
@@ -19,7 +19,7 @@ export const technicianService = {
   // Get technicians/staffs with optional service filtering
   getTechnicians: async (filters?: TechnicianFilter): Promise<ApiResponse<TechnicianApiResponse>> => {
     const params: Record<string, any> = {
-      store_id: API_CONFIG.STORE_ID,
+      store_id: getStoreIdFromUrl(),
     }
 
     if (filters?.serviceIds && filters.serviceIds.length > 0) {

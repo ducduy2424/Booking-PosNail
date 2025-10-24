@@ -86,7 +86,8 @@
     "conflict": "Có xung đột với trạng thái hiện tại. Vui lòng thử lại.",
     "validationError": "Lỗi xác thực. Vui lòng kiểm tra thông tin nhập vào.",
     "serverError": "Lỗi máy chủ. Vui lòng thử lại sau.",
-    "networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối và thử lại."
+    "networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối và thử lại.",
+    "selectServicesFirst": "Vui lòng chọn dịch vụ trước khi chọn kỹ thuật viên."
   }
 }
 

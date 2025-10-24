@@ -38,7 +38,12 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   React.useEffect(() => {
     if (isOpen && !date) {
       const today = new Date()
-      today.setHours(9, 0, 0, 0)
+      // Use current time and round up minutes
+      const now = new Date()
+      const roundedMinutes = Math.ceil(now.getMinutes() / 5) * 5
+      const hours = roundedMinutes >= 60 ? now.getHours() + 1 : now.getHours()
+      const minutes = roundedMinutes >= 60 ? 0 : roundedMinutes
+      today.setHours(hours, minutes, 0, 0)
       setDate(today)
       setMonth(today)
     }
@@ -97,8 +102,12 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           newDate.setHours(date.getHours())
           newDate.setMinutes(date.getMinutes())
         } else {
-          // Default to 9:00 AM
-          newDate.setHours(9, 0, 0, 0)
+          // Use current time and round up minutes
+          const now = new Date()
+          const roundedMinutes = Math.ceil(now.getMinutes() / 5) * 5
+          const hours = roundedMinutes >= 60 ? now.getHours() + 1 : now.getHours()
+          const minutes = roundedMinutes >= 60 ? 0 : roundedMinutes
+          newDate.setHours(hours, minutes, 0, 0)
         }
       }
 

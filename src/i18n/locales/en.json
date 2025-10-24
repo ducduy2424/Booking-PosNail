@@ -86,7 +86,8 @@
     "conflict": "There is a conflict with the current state. Please try again.",
     "validationError": "Validation error. Please check your input.",
     "serverError": "Server error. Please try again later.",
-    "networkError": "Network error. Please check your connection and try again."
+    "networkError": "Network error. Please check your connection and try again.",
+    "selectServicesFirst": "Please select services first before choosing a technician."
   }
 }
 

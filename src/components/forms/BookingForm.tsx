@@ -212,8 +212,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({
             {/* Services & Technicians Section */}
             <div className="space-y-4">
               {appointmentSlots.map((slot, index) => (
-                <div key={slot.id} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
+                <div key={slot.id} className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                  {/* Service & Technician Section - 80% width */}
+                  <div className="md:col-span-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
                       <Label className="text-sm font-medium">
                         {t('booking.service')} <span className="text-red-500">*</span>
                       </Label>
@@ -227,7 +229,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                           value={slot.selectedServices.map((s) => s.lv_2_service).join(', ')}
                           readOnly
                           onClick={() => onServiceSelect?.(slot.id)}
-                        className="bg-white cursor-pointer"
+                          className="bg-white cursor-pointer"
                         />
                         <svg
                           className="absolute right-3 top-3 w-4 h-4 text-gray-400"
@@ -240,16 +242,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                       </div>
                     </div>
 
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       <Label className="text-sm font-medium">
                         {t('booking.selectTechnician')} <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative">
                         {slot.selectedTechnician ? (
-                        // Show selected technician with avatar and name
+                          // Show selected technician with avatar and name
                           <div
                             onClick={() => onTechnicianSelect?.(slot.id)}
-                          className="flex items-center gap-3 p-1 border rounded-lg bg-white cursor-pointer hover:bg-gray-50"
+                            className="flex items-center gap-3 p-1 border rounded-lg bg-white cursor-pointer hover:bg-gray-50"
                           >
                             <img
                               src={slot.selectedTechnician.avatar}
@@ -273,21 +275,22 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                             <User className="w-4 h-4 text-gray-400" />
                           </div>
                         ) : (
-                        // Show placeholder input
+                          // Show placeholder input
                           <Input
                             placeholder={t('booking.selectTechnician')}
                             value=""
                             readOnly
                             onClick={() => onTechnicianSelect?.(slot.id)}
-                          className="bg-white cursor-pointer"
+                            className="bg-white cursor-pointer"
                           />
                         )}
                         {!slot.selectedTechnician && <User className="absolute right-3 top-3 w-4 h-4 text-gray-400" />}
                       </div>
+                    </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex items-end gap-2.5 p-2.5 sm:justify-end sm:gap-2 sm:p-0 justify-center">
+                  {/* Action Buttons - 20% width */}
+                  <div className="md:col-span-2 flex items-end gap-2.5 p-2.5 sm:justify-end sm:gap-2 sm:p-0 justify-center">
                     <Button
                       type="button"
                       variant="outline"

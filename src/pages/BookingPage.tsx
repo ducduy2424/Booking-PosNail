@@ -13,6 +13,7 @@ import type { Technician } from 'store/slices/technicianSlice'
 import { bookingService } from 'services/bookingService'
 import type { CreateTicketRequest, ServiceBooking, StaffService } from 'services/bookingService'
 import { API_CONFIG } from 'config/api'
+import { getStoreIdFromUrl } from 'utils/helpers'
 
 interface AppointmentSlot {
   id: string
@@ -91,9 +92,12 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
       setCurrentSlotId(slotId)
       if (hasServicesSelected) {
         setIsTechnicianModalOpen(true)
+      } else {
+        // Show toast message when no services are selected
+        toast.warning(t('validation.selectServicesFirst'))
       }
     },
-    [hasServicesSelected]
+    [hasServicesSelected, t]
   )
 
   const handleServiceSave = useCallback(
@@ -266,7 +270,7 @@ export const BookingPage: React.FC<BookingPageProps> = ({ className = '' }) => {
 
       // Transform form data to API format
       const ticketData: CreateTicketRequest = {
-        store_id: parseInt(API_CONFIG.STORE_ID),
+        store_id: parseInt(getStoreIdFromUrl()),
         first_name: data.fullName,
         last_name: data.lastName,
         area_code_phone: area_code,
