@@ -118,7 +118,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                       key={service.id}
                       className={`rounded-xl border-2 p-4 transition-all ${
                         isSelected
-                          ? 'border-blue-600 bg-blue-600 text-white'
+                          ? 'border-[#1b365d] bg-[#1b365d] text-white'
                           : 'border-gray-200 bg-white hover:border-gray-300'
                       }`}
                     >
@@ -134,7 +134,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
 
                         <div className="ml-3 flex-shrink-0">
                           {isSelected ? (
-                            <div className="flex items-center bg-gray-800/30 rounded-lg border border-gray-600">
+                            <div className="flex items-center  border border-gray-600 rounded-full">
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -143,7 +143,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                               >
                                 <Minus className="w-4 h-4" />
                               </Button>
-                              <span className="mx-3 text-sm font-bold text-white min-w-[20px] text-center">
+                              <span className="mx-1 text-sm font-bold text-white min-w-[20px] text-center">
                                 {quantity}
                               </span>
                               <Button
@@ -160,7 +160,7 @@ export const DesktopServiceSelectionModal: React.FC<DesktopServiceSelectionModal
                               size="sm"
                               onClick={() => handleServiceToggle(service.id)}
                               className="w-8 h-8 p-0 rounded-full text-white"
-                              style={{ backgroundColor: '#1B365D' }}
+                              style={{ backgroundColor: '#41C64E' }}
                             >
                               <Plus className="w-4 h-4" />
                             </Button>

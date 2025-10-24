@@ -91,7 +91,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                     {/* Service Group Header */}
                     <Button
                       onClick={() => toggleServiceGroup(groupName)}
-                      className="w-full justify-between rounded-xl px-4 py-3 bg-blue-600 text-white border-blue-600"
+                      className="w-full justify-between rounded-xl px-4 py-3 bg-[#1b365d] text-white border-[#1b365d]"
                     >
                       <div className="flex items-center">
                         {categories.find((cat) => cat.id === groupName)?.lv_1_service || groupName}
@@ -121,7 +121,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                                 key={service.id}
                                 className={`rounded-lg border p-3 transition-all ${
                                   isSelected
-                                    ? 'border-blue-600 bg-blue-600 text-white'
+                                    ? 'border-[#1b365d] bg-[#1b365d] text-white'
                                     : 'border-gray-200 bg-white hover:border-gray-300'
                                 }`}
                               >
@@ -139,7 +139,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
 
                                   <div className="mt-2 md:mt-0 md:ml-2 flex-shrink-0 md:self-auto self-end">
                                     {isSelected ? (
-                                      <div className="flex items-center bg-gray-800/30 rounded-lg px-2 py-1 border border-gray-600">
+                                      <div className="flex items-center border border-gray-600 rounded-full">
                                         <Button
                                           size="sm"
                                           variant="ghost"
@@ -165,7 +165,7 @@ export const MobileServiceSelectionModal: React.FC<MobileServiceSelectionModalPr
                                         size="sm"
                                         onClick={() => handleServiceToggle(service.id)}
                                         className="w-6 h-6 p-0 rounded-full text-white"
-                                        style={{ backgroundColor: '#1B365D' }}
+                                        style={{ backgroundColor: '#41C64E' }}
                                       >
                                         <Plus className="w-3 h-3" />
                                       </Button>
